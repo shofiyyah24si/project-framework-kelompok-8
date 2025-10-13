@@ -27,11 +27,11 @@
     <meta name="author" content="Themesberg">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="120x120" href="../../assets/img/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/img/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/img/favicon/favicon-16x16.png">
-    <link rel="manifest" href="../../assets/img/favicon/site.webmanifest">
-    <link rel="mask-icon" href="../../assets/img/favicon/safari-pinned-tab.svg" color="#ffffff">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets-admin/img/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets-admin/img/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets-admin/img/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('assets-admin/img/favicon/site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ asset('assets-admin/img/favicon/safari-pinned-tab.svg') }}" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
 
@@ -199,7 +199,7 @@
                                             <div class="col-auto">
                                                 <!-- Avatar -->
                                                 <img alt="Image placeholder"
-                                                    src="../../assets/img/team/profile-picture-1.jpg"
+                                                    src="{{ asset('assets-admin/assets/img/team/profile-picture-1.jpg')}}"
                                                     class="avatar-md rounded">
                                             </div>
                                             <div class="col ps-0 ms-2">
@@ -223,7 +223,7 @@
                                             <div class="col-auto">
                                                 <!-- Avatar -->
                                                 <img alt="Image placeholder"
-                                                    src="../../assets/img/team/profile-picture-2.jpg"
+                                                    src="{{ asset('assets-admin/assets/img/team/profile-picture-2.jpg') }}"
                                                     class="avatar-md rounded">
                                             </div>
                                             <div class="col ps-0 ms-2">
@@ -259,7 +259,7 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="media d-flex align-items-center">
                                     <img class="avatar rounded-circle" alt="Image placeholder"
-                                        src="../../assets/img/team/profile-picture-3.jpg">
+                                        src="{{ asset('assets-admin/img/team/profile-picture-3.jpg') }}">
                                     <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                         <span class="mb-0 font-small fw-bold text-gray-900">Bonnie Green</span>
                                     </div>
@@ -537,7 +537,7 @@
                                                 <!-- Avatar -->
                                                 <a href="#" class="avatar">
                                                     <img class="rounded" alt="Image placeholder"
-                                                        src="../../assets/img/team/profile-picture-1.jpg">
+                                                        src="{{ asset('assets-admin/img/team/profile-picture-1.jpg')}}">
                                                 </a>
                                             </div>
                                             <div class="col-auto ms--2">
@@ -569,7 +569,7 @@
                                                 <!-- Avatar -->
                                                 <a href="#" class="avatar">
                                                     <img class="rounded" alt="Image placeholder"
-                                                        src="../../assets/img/team/profile-picture-2.jpg">
+                                                        src="{{ asset('assets-admin/img/team/profile-picture-2.jpg') }}">
                                                 </a>
                                             </div>
                                             <div class="col-auto ms--2">
@@ -601,7 +601,7 @@
                                                 <!-- Avatar -->
                                                 <a href="#" class="avatar">
                                                     <img class="rounded" alt="Image placeholder"
-                                                        src="../../assets/img/team/profile-picture-3.jpg">
+                                                        src="{{ asset('assets-admin/img/team/profile-picture-3.jpg') }}">
                                                 </a>
                                             </div>
                                             <div class="col-auto ms--2">
@@ -633,7 +633,7 @@
                                                 <!-- Avatar -->
                                                 <a href="#" class="avatar">
                                                     <img class="rounded" alt="Image placeholder"
-                                                        src="../../assets/img/team/profile-picture-4.jpg">
+                                                        src="{{ asset('assets-admin/img/team/profile-picture-4.jpg') }}">
                                                 </a>
                                             </div>
                                             <div class="col-auto ms--2">
@@ -778,10 +778,10 @@
             <div class="col-12 col-xl-4">
                 <div class="col-12 px-0 mb-4">
                     <div class="card shadow border-0 text-center p-0">
-                        <div class="profile-cover rounded-top" data-background="../../assets/img/profile-cover.jpg"
+                        <div class="profile-cover rounded-top" data-background="{{ asset('assets-admin/assets/img/profile-cover.jpg') }}"
                             style="background: url(&quot;../../assets/img/profile-cover.jpg&quot;);"></div>
                         <div class="card-body pb-5">
-                            <img src="../../assets/img/team/profile-picture-1.jpg"
+                            <img src="{{ asset('assets-admin/img/team/profile-picture-1.jpg') }}"
                                 class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="Neil Portrait">
                             <h4 class="h3">Neil Sims</h4>
                             <h5 class="fw-normal">Senior Software Engineer</h5>
