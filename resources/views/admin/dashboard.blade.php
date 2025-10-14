@@ -199,7 +199,7 @@
                                             <div class="col-auto">
                                                 <!-- Avatar -->
                                                 <img alt="Image placeholder"
-                                                    src="{{ asset('assets-admin/assets/img/team/profile-picture-1.jpg')}}"
+                                                    src="{{ asset('assets-admin/img/team/profile-picture-1.jpg')}}"
                                                     class="avatar-md rounded">
                                             </div>
                                             <div class="col ps-0 ms-2">
@@ -223,7 +223,7 @@
                                             <div class="col-auto">
                                                 <!-- Avatar -->
                                                 <img alt="Image placeholder"
-                                                    src="{{ asset('assets-admin/assets/img/team/profile-picture-2.jpg') }}"
+                                                    src="{{ asset('assets-admin/img/team/profile-picture-2.jpg') }}"
                                                     class="avatar-md rounded">
                                             </div>
                                             <div class="col ps-0 ms-2">
