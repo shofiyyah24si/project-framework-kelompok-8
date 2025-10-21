@@ -1,0 +1,60 @@
+/* === Reset dasar halaman === */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  background-color: #f8f9fa;
+  overflow-y: auto; /* biar bisa discroll normal */
+  overflow-x: hidden;
+}
+
+/* === Wrapper dan panel utama === */
+.wrapper, .main-panel {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Navbar fixed tanpa menimpa konten === */
+.navbar.navbar-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 0.75rem 1rem !important;
+}
+
+/* === Pastikan konten punya jarak dari navbar === */
+.container-fluid {
+  padding-top: 85px !important; /* ganti 85 sesuai tinggi navbar kamu */
+}
+
+/* === Hilangkan jarak kosong tambahan === */
+.page-inner {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* === Sidebar tetap bisa discroll independen === */
+.sidebar .sidebar-wrapper {
+  overflow-y: auto;
+  max-height: calc(100vh - 60px);
+}
+
+/* === Hapus bayangan tambahan di header === */
+.main-header {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* === Transisi halus (opsional) === */
+.card, .navbar, .sidebar, .page-inner {
+  transition: all 0.3s ease-in-out;
+}
