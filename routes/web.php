@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WargaController;
 use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
@@ -16,3 +17,6 @@ Route::get('/angggota', function () {
 
 Route::get('dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+Route::resource('warga', WargaController::class);
+Route::resource('products', \App\Http\Controllers\ProductController::class);
