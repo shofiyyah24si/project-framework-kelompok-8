@@ -1,8 +1,12 @@
 <!--
 
+<<<<<<< HEAD
 =========================================================
 * Volt Pro - Premium Bootstrap 5 Dashboard
 =========================================================
+=======
+@section('title', 'Tambah Warga')
+>>>>>>> 9f485e18020f5ea0016bdb032c4f18d54946509b
 
 * Product Page: https://themesberg.com/product/admin-dashboard/volt-bootstrap-5-dashboard
 * Copyright 2021 Themesberg (https://www.themesberg.com)
@@ -90,6 +94,7 @@
                                 clip-rule="evenodd"></path>
                         </svg>
                     </a>
+<<<<<<< HEAD
                 </div>
             </div>
             <ul class="nav flex-column pt-3 pt-md-0">
@@ -435,11 +440,48 @@
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                         <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary ms-2">Batal</a>
                                     </div>
+=======
+                </li>
+                <li class="breadcrumb-item"><a href="#">Warga</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Tambah Warga</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Tambah Warga</h1>
+                <p class="mb-0">Form untuk menambahkan data warga baru.</p>
+            </div>
+            <div>
+                <a href="{{ route('warga.index') }}" class="btn btn-primary"><i class="far fa-question-circle me-1"></i>
+                    Kembali</a>
+            </div>
+        </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-0 shadow components-section">
+                <div class="card-body">
+                    <form action="{{ route('warga.store') }}" method="POST">
+                        @csrf
+                        <div class="row mb-4">
+                            <div class="col-lg-4 col-sm-6">
+                                <!-- First Name -->
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">First name</label>
+                                    <input name="first_name" type="text" id="first_name" class="form-control" required>
+                                </div>
+
+                                <!-- Last Name -->
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last name</label>
+                                    <input name="last_name" type="text" id="last_name" class="form-control" required>
+>>>>>>> 9f485e18020f5ea0016bdb032c4f18d54946509b
                                 </div>
                             </div>
                         </form>
                     </div>
 
+<<<<<<< HEAD
                 </div>
             </div>
         </div>
@@ -481,3 +523,50 @@
 </body>
 
 </html>
+=======
+                            <div class="col-lg-4 col-sm-6">
+                                <!-- Birthday -->
+                                <div class="mb-3">
+                                    <label for="birthday" class="form-label">Birthday</label>
+                                    <input name="birthday" type="date" id="birthday" class="form-control">
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <select name="gender" id="gender" class="form-select">
+                                        <option value="">-- Pilih --</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-sm-12">
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input name="email" type="text" id="email" class="form-control" required>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input name="phone" type="text" id="phone" class="form-control">
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <a href="{{ route('warga.index') }}"
+                                        class="btn btn-outline-secondary ms-2">Batal</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+>>>>>>> 9f485e18020f5ea0016bdb032c4f18d54946509b
