@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\WargaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,3 +17,5 @@ Route::get('/angggota', function () {
 
 Route::get('dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+Route::resource('warga',WargaController::class);
