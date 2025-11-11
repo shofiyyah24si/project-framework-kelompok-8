@@ -3,11 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WargaController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\WargaController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+}); 
+
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
 Route::get('/ketua', function () {
     return view('ketua');
 });
@@ -19,9 +24,13 @@ Route::get('/angggota', function () {
 Route::get('dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-<<<<<<< HEAD
 Route::resource('warga',WargaController::class);
-=======
-Route::resource('warga', WargaController::class);
-Route::resource('products', \App\Http\Controllers\ProductController::class);
->>>>>>> 9f485e18020f5ea0016bdb032c4f18d54946509b
+
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+  Route::get('/', fn() => redirect()->route('admin.dashboard'));
+  Route::get('/dashboard', [AdminDashboardController::class,'index'])->name('dashboard');
+
+  Route::resource('incidents', Admin\IncidentController::class);
+});
