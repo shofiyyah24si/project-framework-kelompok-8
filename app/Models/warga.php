@@ -8,13 +8,8 @@ class Warga extends Model
 {
     protected $table = 'warga';
     protected $primaryKey = 'warga_id';
+
     protected $fillable = [
-        'no_ktp',
-        'nama',
-        'jenis_kelamin',
-        'agama',
-        'pekerjaan',
-        'telp',
-        'email',
+        'nama', 'nik', 'alamat', 'rt', 'rw', 'no_hp'
     ];
 }
