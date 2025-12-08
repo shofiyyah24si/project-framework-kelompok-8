@@ -1,90 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@import "flowbite/dist/flowbite.css";
-/* =========================================================
-   GLOBAL FORM COMPONENTS (DARK MODE)
-   ========================================================= */
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
 
-/* INPUT */
-.input-dark {
-    @apply w-full rounded-xl bg-slate-900/60 border border-slate-700
-           px-3 py-2 text-sm text-slate-100 placeholder-slate-400
-           focus:ring-2 focus:ring-accent focus:border-accent
-           outline-none transition;
-}
-
-/* TEXTAREA */
-.textarea-dark {
-    @apply w-full rounded-xl bg-slate-900/60 border border-slate-700
-           px-3 py-2 text-sm text-slate-100
-           focus:ring-2 focus:ring-accent outline-none transition;
-}
-
-/* SELECT */
-.select-dark {
-    @apply w-full rounded-xl bg-slate-900/60 border border-slate-700
-           px-3 py-2 text-sm text-slate-100
-           focus:ring-2 focus:ring-accent outline-none transition;
-}
-
-/* FILE UPLOAD */
-.file-dark {
-    @apply w-full text-sm text-slate-200 cursor-pointer
-           file:mr-3 file:rounded-lg file:border-0
-           file:bg-accent file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white
-           hover:file:bg-accentSoft transition;
-}
-
-
-/* =========================================================
-   BUTTON COMPONENTS
-   ========================================================= */
-
-/* PRIMARY BUTTON (Blue) */
-.btn-primary {
-    @apply px-5 py-2 rounded-xl bg-accent text-white font-medium
-           shadow-lg shadow-accent/20
-           hover:bg-accentSoft transition;
-}
-
-/* SECONDARY BUTTON (Gray) */
-.btn-secondary {
-    @apply px-5 py-2 rounded-xl bg-slate-700 text-slate-200 font-medium
-           hover:bg-slate-600 transition;
-}
-
-/* DANGER BUTTON (Red) */
-.btn-danger {
-    @apply px-5 py-2 rounded-xl bg-red-600 text-white font-medium
-           hover:bg-red-700 transition;
-}
-
-
-/* =========================================================
-   CARD / PANEL
-   ========================================================= */
-
-.card-dark {
-    @apply rounded-2xl bg-navySoft/80 border border-slate-700/70
-           p-6 shadow-lg shadow-black/20;
-}
-
-
-/* =========================================================
-   IMAGE PREVIEW
-   ========================================================= */
-
-.img-preview {
-    @apply mt-2 h-32 w-full object-cover rounded-xl border border-slate-700;
-}
-
-
-/* =========================================================
-   GRID FORM LAYOUT
-   ========================================================= */
-
-.form-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-5;
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
 }
