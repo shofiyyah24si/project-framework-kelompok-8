@@ -1,133 +1,282 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Kejadian Bencana')
+
 @section('content')
+    <main class="py-5 bg-light">
+        <div class="container">
 
-<div class="max-w-5xl mx-auto">
-
-    <h1 class="text-2xl font-semibold mb-6">Edit Kejadian Bencana</h1>
-
-    <div class="rounded-2xl bg-navySoft/70 border border-slate-700 p-8 shadow-xl">
-
-        <form action="{{ route('kejadian.update', $data->kejadian_id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-
-            {{-- GRID FORM --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                
+            {{-- HEADER --}}
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <label class="text-sm text-slate-300">Jenis Bencana</label>
-                    <input type="text" name="jenis_bencana" value="{{ $data->jenis_bencana }}" class="input-dark">
+                    <h1 class="h3 mb-1">Edit Kejadian Bencana</h1>
+                    <p class="text-muted mb-0">Perbarui informasi kejadian yang sudah tercatat.</p>
                 </div>
-
-                <div>
-                    <label class="text-sm text-slate-300">Status Kejadian</label>
-                    <select name="status_kejadian" class="input-dark">
-                        <option value="Baru" {{ $data->status_kejadian=='Baru'?'selected':'' }}>Baru</option>
-                        <option value="Proses" {{ $data->status_kejadian=='Proses'?'selected':'' }}>Proses</option>
-                        <option value="Selesai" {{ $data->status_kejadian=='Selesai'?'selected':'' }}>Selesai</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-sm text-slate-300">Tanggal</label>
-                    <input type="date" name="tanggal" value="{{ $data->tanggal }}" class="input-dark">
-                </div>
-
-                <div>
-                    <label class="text-sm text-slate-300">Lokasi</label>
-                    <input type="text" name="lokasi_text" value="{{ $data->lokasi_text }}" class="input-dark">
-                </div>
-
-                <div>
-                    <label class="text-sm text-slate-300">RT</label>
-                    <input type="text" name="rt" value="{{ $data->rt }}" class="input-dark">
-                </div>
-
-                <div>
-                    <label class="text-sm text-slate-300">RW</label>
-                    <input type="text" name="rw" value="{{ $data->rw }}" class="input-dark">
-                </div>
+                <a href="{{ route('kejadian.index') }}" class="btn btn-outline-secondary">
+                    &laquo; Kembali ke Daftar
+                </a>
             </div>
 
-            {{-- Dampak --}}
-            <div class="mt-5">
-                <label class="text-sm text-slate-300">Dampak</label>
-                <input type="text" name="dampak" value="{{ $data->dampak }}" class="input-dark">
-            </div>
+            {{-- ERROR VALIDASI GLOBAL --}}
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <div class="fw-semibold mb-1">Terjadi kesalahan:</div>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-            {{-- Keterangan --}}
-            <div class="mt-5">
-                <label class="text-sm text-slate-300">Keterangan</label>
-                <textarea name="keterangan" rows="3" class="input-dark">{{ $data->keterangan }}</textarea>
-            </div>
+            {{-- FORM --}}
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="editForm" action="{{ route('kejadian.update', $data->kejadian_id) }}"
+                          method="POST"
+                          enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
 
-            {{-- FOTO UTAMA --}}
-            <div class="mt-6">
-                <label class="text-sm text-slate-300">Foto Utama</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Jenis Bencana</label>
+                                    <input type="text"
+                                           name="jenis_bencana"
+                                           class="form-control @error('jenis_bencana') is-invalid @enderror"
+                                           value="{{ old('jenis_bencana', $data->jenis_bencana) }}"
+                                           placeholder="Misal: Banjir, Kebakaran, Longsor"
+                                           required>
+                                    @error('jenis_bencana')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
-                @if($data->foto)
-                    <img src="{{ asset('storage/'.$data->foto) }}"
-                         class="w-full max-w-xs h-32 object-cover rounded-xl border border-slate-700 mt-2">
-                @endif
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Tanggal</label>
+                                    <input type="date"
+                                           name="tanggal"
+                                           class="form-control @error('tanggal') is-invalid @enderror"
+                                           value="{{ old('tanggal', $data->tanggal ? date('Y-m-d', strtotime($data->tanggal)) : '') }}"
+                                           required>
+                                    @error('tanggal')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
-                <input type="file" name="foto" class="file-dark mt-3">
-            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Status Kejadian</label>
+                                    <select name="status_kejadian"
+                                            class="form-select @error('status_kejadian') is-invalid @enderror"
+                                            required>
+                                        <option value="">Pilih status...</option>
+                                        @foreach (['Baru','Proses','Selesai'] as $st)
+                                            <option value="{{ $st }}"
+                                                {{ old('status_kejadian', $data->status_kejadian) == $st ? 'selected' : '' }}>
+                                                {{ $st }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('status_kejadian')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
 
-            {{-- DOKUMENTASI --}}
-            <div class="mt-8">
-                <label class="text-sm font-semibold text-slate-300">Dokumentasi Kejadian</label>
+                        {{-- LOKASI + RT/RW --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Lokasi</label>
+                            <input type="text"
+                                   name="lokasi_text"
+                                   class="form-control @error('lokasi_text') is-invalid @enderror"
+                                   value="{{ old('lokasi_text', $data->lokasi_text) }}"
+                                   placeholder="Nama jalan / titik lokasi"
+                                   required>
+                            @error('lokasi_text')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">RT</label>
+                                <input type="text"
+                                       name="rt"
+                                       class="form-control @error('rt') is-invalid @enderror"
+                                       value="{{ old('rt', $data->rt) }}"
+                                       placeholder="RT"
+                                       required>
+                                @error('rt')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">RW</label>
+                                <input type="text"
+                                       name="rw"
+                                       class="form-control @error('rw') is-invalid @enderror"
+                                       value="{{ old('rw', $data->rw) }}"
+                                       placeholder="RW"
+                                       required>
+                                @error('rw')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
-                    @foreach($data->files as $file)
-                        <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-2">
+                        {{-- DAMPAK --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Dampak</label>
+                            <textarea name="dampak"
+                                      rows="3"
+                                      class="form-control @error('dampak') is-invalid @enderror"
+                                      placeholder="Jelaskan dampak (korban, kerusakan, dll)"
+                                      required>{{ old('dampak', $data->dampak) }}</textarea>
+                            @error('dampak')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                            {{-- IMAGE --}}
-                            @if($file->is_image)
-                                <img src="{{ $file->url }}" class="h-28 w-full object-cover rounded-lg">
-                            @endif
+                        {{-- KETERANGAN --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Keterangan Tambahan (opsional)</label>
+                            <textarea name="keterangan"
+                                      rows="3"
+                                      class="form-control @error('keterangan') is-invalid @enderror"
+                                      placeholder="Catatan tambahan jika ada...">{{ old('keterangan', $data->keterangan) }}</textarea>
+                            @error('keterangan')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                            {{-- PDF --}}
-                            @if($file->is_document)
-                                <div class="h-28 flex items-center justify-center text-slate-300">
-                                    <i class="fa fa-file-pdf text-3xl text-red-400"></i>
+                        {{-- FOTO UTAMA --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Foto Utama (opsional)</label>
+                            <input type="file"
+                                   name="foto"
+                                   class="form-control @error('foto') is-invalid @enderror">
+                            <small class="text-muted">
+                                Format gambar. Kalau diisi, foto lama akan diganti.
+                            </small>
+                            @error('foto')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+
+                            @if ($data->foto)
+                                <div class="mt-2">
+                                    <small class="text-muted d-block mb-1">Foto saat ini:</small>
+                                    <img src="{{ $data->foto_url }}"
+                                         alt="Foto kejadian"
+                                         class="img-fluid rounded shadow-sm"
+                                         style="max-height: 200px;">
                                 </div>
                             @endif
-
-                            {{-- VIDEO --}}
-                            @if($file->is_video)
-                                <video class="h-28 w-full rounded-lg" controls>
-                                    <source src="{{ $file->url }}">
-                                </video>
-                            @endif
-
-                            <form action="{{ route('kejadian.deleteFile', $file->id) }}" method="POST" class="mt-2 text-right">
-                                @csrf
-                                @method('DELETE')
-                                <button class="text-red-400 hover:text-red-300 text-xs">Hapus</button>
-                            </form>
-
                         </div>
-                    @endforeach
-                </div>
 
-                {{-- TAMBAH BARU --}}
-                <div class="mt-4">
-                    <label class="text-sm text-slate-300">Tambah Dokumentasi Baru</label>
-                    <input type="file" name="files[]" multiple class="file-dark mt-2">
-                </div>
+                        {{-- DOKUMENTASI FILES (BARU) --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Dokumentasi Tambahan (opsional)</label>
+                            <input type="file"
+                                   name="files[]"
+                                   class="form-control @error('files.*') is-invalid @enderror"
+                                   multiple>
+                            <small class="text-muted">
+                                Boleh gambar, video, atau dokumen. File baru akan ditambahkan ke daftar dokumentasi.
+                            </small>
+                            @error('files.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
 
+                            {{-- LIST FILE YANG SUDAH ADA --}}
+                            @if ($data->files && $data->files->count())
+                                <div class="mt-3">
+                                    <small class="text-muted d-block mb-2">Dokumentasi saat ini:</small>
+                                    <ul class="list-group list-group-flush">
+                                        @foreach ($data->files as $file)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="bi bi-paperclip me-1"></i>
+                                                    <a href="{{ asset('storage/kejadian/dokumentasi/'.$file->nama_file) }}"
+                                                       target="_blank">
+                                                        {{ $file->nama_file }}
+                                                    </a>
+                                                    <span class="badge bg-light text-muted border ms-2">
+                                                        {{ strtoupper($file->tipe) }}
+                                                    </span>
+                                                </div>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger delete-file-btn"
+                                                        data-file-id="{{ $file->id }}"
+                                                        data-url="{{ route('kejadian.deleteFile', $file->id) }}">
+                                                    Hapus
+                                                </button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- TOMBOL AKSI --}}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Simpan Perubahan
+                            </button>
+                            <a href="{{ route('kejadian.index') }}" class="btn btn-outline-secondary">
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            {{-- BUTTON --}}
-            <div class="mt-8 flex justify-end gap-3">
-                <a href="{{ route('kejadian.index') }}" class="btn-secondary">Batal</a>
-                <button class="btn-primary">Simpan Perubahan</button>
-            </div>
-
-        </form>
-    </div>
-</div>
-
+        </div>
+    </main>
 @endsection
+
+@push('scripts')
+<script>
+    // Fungsi untuk menghapus file dengan konfirmasi dan AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-file-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const fileId = this.getAttribute('data-file-id');
+                const deleteUrl = this.getAttribute('data-url');
+                
+                if (confirm('Yakin hapus file ini?')) {
+                    // Kirim request DELETE dengan AJAX
+                    fetch(deleteUrl, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Hapus elemen dari DOM
+                            this.closest('li').remove();
+                            alert('File berhasil dihapus!');
+                        } else {
+                            alert('Gagal menghapus file!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat menghapus file!');
+                    });
+                }
+            });
+        });
+    });
+</script>
+@endpush

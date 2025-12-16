@@ -29,14 +29,13 @@ class KejadianController extends Controller
             });
         }
 
-        if ($request->rt)   $query->where('rt', $request->rt);
-        if ($request->rw)   $query->where('rw', $request->rw);
+        if ($request->rt) $query->where('rt', $request->rt);
+        if ($request->rw) $query->where('rw', $request->rw);
         if ($request->status) $query->where('status_kejadian', $request->status);
 
         $data = $query->latest()->paginate(5)->withQueryString();
-
-        $listRT     = KejadianBencana::select('rt')->distinct()->pluck('rt');
-        $listRW     = KejadianBencana::select('rw')->distinct()->pluck('rw');
+        $listRT = KejadianBencana::select('rt')->distinct()->orderBy('rt')->pluck('rt');
+        $listRW = KejadianBencana::select('rw')->distinct()->orderBy('rw')->pluck('rw');
         $listStatus = ['Baru', 'Proses', 'Selesai'];
 
         return view('kejadian.index', compact('data', 'listRT', 'listRW', 'listStatus'));
@@ -54,50 +53,67 @@ class KejadianController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | STORE (Foto Utama + Multiple Files)
+    | STORE (Foto Utama + Multiple Files) — UNLIMITED VERSION
     |--------------------------------------------------------------------------
     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'jenis_bencana'    => 'required',
-            'tanggal'          => 'required|date',
-            'lokasi_text'      => 'required',
-            'rt'               => 'required',
-            'rw'               => 'required',
-            'dampak'           => 'required',
-            'status_kejadian'  => 'required',
-            'keterangan'       => 'nullable',
+            'jenis_bencana'   => 'required|string|max:255',
+            'tanggal'         => 'required|date',
+            'lokasi_text'     => 'required|string|max:255',
+            'rt'              => 'required|string|max:10',
+            'rw'              => 'required|string|max:10',
+            'dampak'          => 'required|string',
+            'status_kejadian' => 'required|in:Baru,Proses,Selesai',
+            'keterangan'      => 'nullable|string',
 
             // Foto utama
-            'foto'             => 'nullable|image|max:4096',
+            'foto'            => 'nullable|image|max:2048',
 
             // Multiple upload
-            'files.*'          => 'nullable|mimes:jpg,jpeg,png,mp4,avi,pdf,doc,docx|max:12288'
+            'files'           => 'nullable|array',
+            'files.*'         => 'nullable|file|max:5120|mimetypes:image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         ]);
 
+        // Format tanggal ke Y-m-d (jika belum menggunakan $casts di Model)
+        $validated['tanggal'] = date('Y-m-d', strtotime($validated['tanggal']));
+
+        // Simpan foto utama (kalau ada)
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('kejadian/foto_utama', 'public');
         }
 
         $kejadian = KejadianBencana::create($validated);
 
-        // Upload dokumentasi
+        // Upload dokumentasi tambahan (kalau ada)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-
                 $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('kejadian/dokumentasi', $filename, 'public');
 
                 KejadianFile::create([
                     'kejadian_id' => $kejadian->kejadian_id,
                     'nama_file'   => $filename,
-                    'tipe'        => $file->extension()
+                    'tipe'        => $file->extension(),
                 ]);
             }
         }
 
-        return redirect()->route('kejadian.index')->with('success', 'Data kejadian berhasil ditambahkan.');
+        return redirect()
+            ->route('kejadian.index')
+            ->with('success', 'Data kejadian berhasil ditambahkan.');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SHOW (Detail)
+    |--------------------------------------------------------------------------
+    */
+    public function show($id)
+    {
+        $data = KejadianBencana::with('files')->findOrFail($id);
+        return view('kejadian.show', compact('data'));
     }
 
     /*
@@ -108,19 +124,13 @@ class KejadianController extends Controller
     public function edit($id)
     {
         $data = KejadianBencana::with('files')->findOrFail($id);
+        
         return view('kejadian.edit', compact('data'));
-    }
-
-    public function show($id)
-    {
-        $data = KejadianBencana::with('files')->findOrFail($id);
-
-        return view('kejadian.show', compact('data'));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | UPDATE (Foto Utama + Multiple Files)
+    | UPDATE — UNLIMITED VERSION
     |--------------------------------------------------------------------------
     */
     public function update(Request $request, $id)
@@ -128,64 +138,72 @@ class KejadianController extends Controller
         $kejadian = KejadianBencana::findOrFail($id);
 
         $validated = $request->validate([
-            'jenis_bencana'    => 'required',
-            'tanggal'          => 'required|date',
-            'lokasi_text'      => 'required',
-            'rt'               => 'required',
-            'rw'               => 'required',
-            'dampak'           => 'required',
-            'status_kejadian'  => 'required',
-            'keterangan'       => 'nullable',
+            'jenis_bencana'   => 'required|string|max:255',
+            'tanggal'         => 'required|date',
+            'lokasi_text'     => 'required|string|max:255',
+            'rt'              => 'required|string|max:10',
+            'rw'              => 'required|string|max:10',
+            'dampak'          => 'required|string',
+            'status_kejadian' => 'required|in:Baru,Proses,Selesai',
+            'keterangan'      => 'nullable|string',
 
-            'foto'             => 'nullable|image|max:4096',
-            'files.*'          => 'nullable|mimes:jpg,jpeg,png,mp4,avi,pdf,doc,docx|max:12288'
+            'foto'            => 'nullable|image|max:2048',
+            'files'           => 'nullable|array',
+            'files.*'         => 'nullable|file|max:5120|mimetypes:image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         ]);
 
-        // Update foto utama
-        if ($request->hasFile('foto')) {
+        // Format tanggal ke Y-m-d (jika belum menggunakan $casts di Model)
+        $validated['tanggal'] = date('Y-m-d', strtotime($validated['tanggal']));
 
+        // Update foto utama (kalau diisi baru)
+        if ($request->hasFile('foto')) {
             if ($kejadian->foto && Storage::disk('public')->exists($kejadian->foto)) {
                 Storage::disk('public')->delete($kejadian->foto);
             }
 
             $validated['foto'] = $request->file('foto')->store('kejadian/foto_utama', 'public');
+        } else {
+            // Jika tidak ada foto baru, pertahankan foto lama
+            $validated['foto'] = $kejadian->foto;
         }
 
+        // Update data utama
         $kejadian->update($validated);
 
-        // Upload dokumentasi tambahan
+        // Upload dokumentasi tambahan (kalau ada)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-
                 $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('kejadian/dokumentasi', $filename, 'public');
 
                 KejadianFile::create([
                     'kejadian_id' => $kejadian->kejadian_id,
                     'nama_file'   => $filename,
-                    'tipe'        => $file->extension()
+                    'tipe'        => $file->extension(),
                 ]);
             }
         }
 
-        return redirect()->route('kejadian.index')->with('success', 'Perubahan berhasil disimpan.');
+        return redirect()
+            ->route('kejadian.index')
+            ->with('success', 'Perubahan berhasil disimpan.');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | DELETE (hapus kejadian + semua dokumentasi)
+    | DELETE KEJADIAN
     |--------------------------------------------------------------------------
     */
     public function destroy($id)
     {
         $kejadian = KejadianBencana::with('files')->findOrFail($id);
 
-        // Delete foto utama
+        // Hapus foto utama
         if ($kejadian->foto && Storage::disk('public')->exists($kejadian->foto)) {
             Storage::disk('public')->delete($kejadian->foto);
         }
 
-        // Delete dokumentasi
+        // Hapus file dokumentasi
         foreach ($kejadian->files as $file) {
             $path = 'kejadian/dokumentasi/' . $file->nama_file;
             if (Storage::disk('public')->exists($path)) {
@@ -201,7 +219,7 @@ class KejadianController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | DELETE FILE DOKUMENTASI (FITUR OPSI A)
+    | DELETE FILE DOKUMENTASI
     |--------------------------------------------------------------------------
     */
     public function deleteFile($id)

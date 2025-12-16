@@ -8,9 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::table('posko_bencana', function (Blueprint $table) {
-            $table->string('foto')->nullable()->after('penanggung_jawab');
-        });
+       //
     }
 
     public function down()

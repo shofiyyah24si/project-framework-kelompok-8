@@ -1,125 +1,267 @@
 @extends('layouts.app')
 
+@section('title', 'Tambah Kejadian Bencana')
+
 @section('content')
+    <main class="py-5 bg-light">
+        <div class="container">
 
-<h1 class="text-2xl font-semibold mb-4">Tambah Kejadian Bencana</h1>
-<p class="text-xs text-slate-400 mb-6">
-    Catat informasi kejadian bencana dengan detail untuk memudahkan penanganan.
-</p>
+            {{-- HEADER --}}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Tambah Kejadian Bencana</h1>
+                    <p class="text-muted mb-0">Catat kejadian bencana yang baru terjadi.</p>
+                </div>
+                <a href="{{ route('kejadian.index') }}" class="btn btn-outline-secondary">
+                    &laquo; Kembali ke Daftar
+                </a>
+            </div>
 
-<div class="bg-navySoft border border-slate-700 rounded-2xl p-8 shadow-xl">
+            {{-- ERROR SESSION --}}
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {{ session('error') }}
+                </div>
+            @endif
 
-<form action="{{ route('kejadian.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
+            {{-- ERROR VALIDASI --}}
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <div class="fw-semibold mb-1">Terjadi kesalahan:</div>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- FORM --}}
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form action="{{ route('kejadian.store') }}"
+                          method="POST"
+                          enctype="multipart/form-data"
+                          id="kejadianForm">
+                        @csrf
 
-        {{-- JENIS BENCANA --}}
-        <div>
-            <label class="text-sm font-medium text-slate-200">Jenis Bencana</label>
-            <input type="text" name="jenis_bencana"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none placeholder-slate-500">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Jenis Bencana <span class="text-danger">*</span></label>
+                                    <input type="text"
+                                           name="jenis_bencana"
+                                           class="form-control @error('jenis_bencana') is-invalid @enderror"
+                                           value="{{ old('jenis_bencana') }}"
+                                           placeholder="Misal: Banjir, Kebakaran, Longsor"
+                                           required
+                                           maxlength="255">
+                                    @error('jenis_bencana')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Tanggal <span class="text-danger">*</span></label>
+                                    <input type="date"
+                                           name="tanggal"
+                                           class="form-control @error('tanggal') is-invalid @enderror"
+                                           value="{{ old('tanggal', date('Y-m-d')) }}"
+                                           required>
+                                    @error('tanggal')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Status Kejadian <span class="text-danger">*</span></label>
+                                    <select name="status_kejadian"
+                                            class="form-select @error('status_kejadian') is-invalid @enderror"
+                                            required>
+                                        <option value="">Pilih status...</option>
+                                        @foreach (['Baru','Proses','Selesai'] as $st)
+                                            <option value="{{ $st }}"
+                                                {{ old('status_kejadian') == $st ? 'selected' : '' }}>
+                                                {{ $st }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('status_kejadian')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- LOKASI + RT/RW --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Lokasi <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   name="lokasi_text"
+                                   class="form-control @error('lokasi_text') is-invalid @enderror"
+                                   value="{{ old('lokasi_text') }}"
+                                   placeholder="Nama jalan / titik lokasi"
+                                   required
+                                   maxlength="255">
+                            @error('lokasi_text')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">RT <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       name="rt"
+                                       class="form-control @error('rt') is-invalid @enderror"
+                                       value="{{ old('rt') }}"
+                                       placeholder="RT"
+                                       required
+                                       maxlength="10">
+                                @error('rt')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">RW <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       name="rw"
+                                       class="form-control @error('rw') is-invalid @enderror"
+                                       value="{{ old('rw') }}"
+                                       placeholder="RW"
+                                       required
+                                       maxlength="10">
+                                @error('rw')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- DAMPAK --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Dampak <span class="text-danger">*</span></label>
+                            <textarea name="dampak"
+                                      rows="3"
+                                      class="form-control @error('dampak') is-invalid @enderror"
+                                      placeholder="Jelaskan dampak (korban, kerusakan, dll)"
+                                      required>{{ old('dampak') }}</textarea>
+                            @error('dampak')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- KETERANGAN --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Keterangan Tambahan (opsional)</label>
+                            <textarea name="keterangan"
+                                      rows="3"
+                                      class="form-control @error('keterangan') is-invalid @enderror"
+                                      placeholder="Catatan tambahan jika ada...">{{ old('keterangan') }}</textarea>
+                            @error('keterangan')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- FOTO UTAMA --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Foto Utama (opsional)</label>
+                            <input type="file"
+                                   name="foto"
+                                   id="fotoInput"
+                                   class="form-control @error('foto') is-invalid @enderror"
+                                   accept="image/*">
+                            <small class="text-muted">
+                                Format gambar (jpg, jpeg, png, gif), maks 2 MB.
+                            </small>
+                            @error('foto')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- DOKUMENTASI MULTIPLE --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Dokumentasi Tambahan (opsional)</label>
+                            <input type="file"
+                                   name="files[]"
+                                   id="filesInput"
+                                   class="form-control @error('files.*') is-invalid @enderror"
+                                   multiple
+                                   accept="image/*,video/*,.pdf,.doc,.docx">
+                            <small class="text-muted">
+                                Boleh gambar, video, atau dokumen (jpg, png, gif, mp4, avi, pdf, doc, docx). Maks 5 MB per file.
+                            </small>
+                            @error('files.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <span id="submitText">Simpan Kejadian</span>
+                                <span id="submitSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            </button>
+                            <a href="{{ route('kejadian.index') }}" class="btn btn-outline-secondary">
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
+    </main>
 
-        {{-- TANGGAL --}}
-        <div>
-            <label class="text-sm font-medium text-slate-200">Tanggal</label>
-            <input type="date" name="tanggal"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none">
-        </div>
-
-        {{-- LOKASI --}}
-        <div class="md:col-span-2">
-            <label class="text-sm font-medium text-slate-200">Lokasi</label>
-            <input type="text" name="lokasi_text"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none">
-        </div>
-
-        {{-- RT --}}
-        <div>
-            <label class="text-sm font-medium text-slate-200">RT</label>
-            <input type="text" name="rt"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none">
-        </div>
-
-        {{-- RW --}}
-        <div>
-            <label class="text-sm font-medium text-slate-200">RW</label>
-            <input type="text" name="rw"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none">
-        </div>
-
-        {{-- DAMPAK --}}
-        <div class="md:col-span-2">
-            <label class="text-sm font-medium text-slate-200">Dampak</label>
-            <textarea name="dampak" rows="2"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none"></textarea>
-        </div>
-
-        {{-- STATUS --}}
-        <div>
-            <label class="text-sm font-medium text-slate-200">Status Kejadian</label>
-            <select name="status_kejadian"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none">
-                <option value="">-- Pilih Status --</option>
-                <option value="Baru">Baru</option>
-                <option value="Proses">Proses</option>
-                <option value="Selesai">Selesai</option>
-            </select>
-        </div>
-
-        {{-- FOTO UTAMA --}}
-        <div class="md:col-span-2">
-            <label class="text-sm font-medium text-slate-200">Foto Utama Kejadian</label>
-            <input type="file" name="foto"
-                class="mt-2 block w-full text-sm text-slate-200
-                       file:mr-4 file:rounded-lg file:border-0 file:bg-accent file:px-4 file:py-2 file:text-xs file:font-medium 
-                       hover:file:bg-accentSoft cursor-pointer">
-        </div>
-
-        {{-- MULTIPLE FILE --}}
-        <div class="md:col-span-2">
-            <label class="text-sm font-medium text-slate-200">Dokumentasi Tambahan (Multiple Upload)</label>
-            <input type="file" name="files[]" multiple
-                class="mt-2 block w-full text-sm text-slate-200
-                       file:mr-4 file:rounded-lg file:border-0 file:bg-accent file:px-4 file:py-2 file:text-xs file:font-medium 
-                       hover:file:bg-accentSoft cursor-pointer">
-
-            <p class="text-xs text-slate-400 mt-2">
-                *Dapat mengunggah banyak file sekaligus (foto/video/pdf)
-            </p>
-        </div>
-
-        {{-- KETERANGAN --}}
-        <div class="md:col-span-2">
-            <label class="text-sm font-medium text-slate-200">Keterangan</label>
-            <textarea name="keterangan" rows="3"
-                class="mt-1 w-full rounded-xl bg-slate-900/50 border border-slate-700 px-4 py-2 text-sm text-slate-100 
-                       focus:ring-2 focus:ring-accent focus:outline-none"></textarea>
-        </div>
-
-    </div>
-
-    <div class="mt-8 flex justify-end gap-4">
-        <a href="{{ route('kejadian.index') }}"
-            class="px-4 py-2 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-800/60 transition">
-            Batal
-        </a>
-
-        <button class="px-4 py-2 rounded-xl bg-accent text-white font-medium hover:bg-accentSoft transition">
-            Simpan
-        </button>
-    </div>
-
-</form>
-
-</div>
-
+    {{-- SCRIPT UNTUK VALIDASI CLIENT-SIDE DAN LOADING STATE --}}
+    @push('scripts')
+    <script>
+        document.getElementById('kejadianForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitSpinner = document.getElementById('submitSpinner');
+            
+            // Validasi file size untuk foto utama
+            const fotoInput = document.getElementById('fotoInput');
+            if (fotoInput.files.length > 0) {
+                const fotoFile = fotoInput.files[0];
+                const maxSize = 2 * 1024 * 1024; // 2 MB
+                if (fotoFile.size > maxSize) {
+                    e.preventDefault();
+                    alert('Ukuran foto utama melebihi 2 MB');
+                    return;
+                }
+            }
+            
+            // Validasi file size untuk multiple files
+            const filesInput = document.getElementById('filesInput');
+            if (filesInput.files.length > 0) {
+                const maxSize = 5 * 1024 * 1024; // 5 MB
+                for (let file of filesInput.files) {
+                    if (file.size > maxSize) {
+                        e.preventDefault();
+                        alert(`File "${file.name}" melebihi 5 MB`);
+                        return;
+                    }
+                }
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.textContent = 'Menyimpan...';
+            submitSpinner.classList.remove('d-none');
+        });
+        
+        // Set tanggal default ke hari ini
+        document.addEventListener('DOMContentLoaded', function() {
+            const tanggalInput = document.querySelector('input[name="tanggal"]');
+            if (!tanggalInput.value) {
+                tanggalInput.value = '{{ date("Y-m-d") }}';
+            }
+        });
+    </script>
+    @endpush
 @endsection
