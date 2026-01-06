@@ -51,16 +51,26 @@
                                 </table>
                             </div>
                             <div class="col-md-6">
-                                <h5 class="fw-bold mb-3 text-dark">Status & Metode</h5>
+                                <h5 class="fw-bold mb-3 text-dark">Informasi Donasi</h5>
                                 <table class="table table-borderless">
-                                    <tr>
+                                    {{-- HAPUS STATUS BADGE --}}
+                                    {{-- <tr>
                                         <th width="40%" class="text-muted">Status</th>
                                         <td>{!! $donasi->status_badge !!}</td>
-                                    </tr>
+                                    </tr> --}}
+                                    
+                                    {{-- PERBAIKI TANGGAL DONASI --}}
                                     <tr>
                                         <th class="text-muted">Tanggal Donasi</th>
-                                        <td>{{ $donasi->tanggal_donasi->format('d M Y') }}</td>
+                                        <td>
+                                            @if($donasi->tanggal_donasi)
+                                                {{ \Carbon\Carbon::parse($donasi->tanggal_donasi)->format('d M Y') }}
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
                                     </tr>
+                                    
                                     <tr>
                                         <th class="text-muted">Metode Pembayaran</th>
                                         <td>{{ $donasi->metode_pembayaran ?? '-' }}</td>
@@ -81,7 +91,7 @@
                                             <small class="text-muted">Upload: {{ $donasi->created_at->format('d M Y H:i') }}</small>
                                         </div>
                                         <div class="ms-auto">
-                                            <a href="{{ $donasi->bukti_donasi_url }}" target="_blank" class="btn btn-sm btn-primary">
+                                            <a href="{{ $donasi->bukti_donasi_url ?? '#' }}" target="_blank" class="btn btn-sm btn-primary">
                                                 <i class="bi bi-download me-1"></i> Download
                                             </a>
                                         </div>
@@ -125,10 +135,19 @@
                                     {{ $donasi->kejadian->lokasi_text }}
                                 </div>
                             </div>
+                            
+                            {{-- PERBAIKI TANGGAL KEJADIAN --}}
                             <div class="mb-3">
                                 <div class="text-muted small">Tanggal Kejadian</div>
-                                <div>{{ $donasi->kejadian->tanggal->format('d M Y') }}</div>
+                                <div>
+                                    @if($donasi->kejadian->tanggal)
+                                        {{ \Carbon\Carbon::parse($donasi->kejadian->tanggal)->format('d M Y') }}
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </div>
                             </div>
+                            
                             <div class="mb-3">
                                 <div class="text-muted small">Status Kejadian</div>
                                 <div>

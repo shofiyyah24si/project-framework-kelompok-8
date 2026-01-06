@@ -22,7 +22,7 @@ class DonasiBencana extends Model
         'keterangan',
         'tanggal_donasi',
         'metode_pembayaran',
-        'status'
+        // 'status' // DIHAPUS
     ];
 
     protected $casts = [
@@ -43,6 +43,8 @@ class DonasiBencana extends Model
         return asset('storage/' . $this->bukti_donasi);
     }
 
+    // HAPUS METHOD getStatusBadgeAttribute() KARENA TIDAK BUTUH STATUS
+    /*
     public function getStatusBadgeAttribute()
     {
         $badges = [
@@ -53,4 +55,5 @@ class DonasiBencana extends Model
 
         return '<span class="badge bg-' . ($badges[$this->status] ?? 'secondary') . '">' . ucfirst($this->status) . '</span>';
     }
+    */
 }

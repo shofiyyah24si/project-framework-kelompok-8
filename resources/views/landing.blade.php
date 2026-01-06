@@ -18,16 +18,16 @@
                             untuk mendukung respon cepat, terukur, dan terkoordinasi.
                         </p>
                         
-                        <!-- TOMBOL LOGIN PROFESIONAL - HANYA INI YANG DIPERBAIKI -->
+                        <!-- TOMBOL MASUK KE DASHBOARD - SUDAH DIPERBAIKI -->
                         <div class="mt-5 pt-2">
-                            <!-- TOMBOL DENGAN LINK KE HALAMAN LOGIN -->
-                            <a href="{{ route('login') }}" class="btn btn-login-custom btn-lg px-5 py-3 rounded-pill shadow-lg text-decoration-none d-inline-flex align-items-center justify-content-center">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>
-                                <span class="fw-bold fs-5">LOGIN KE SISTEM</span>
+                            <!-- TOMBOL DENGAN LINK LANGSUNG KE DASHBOARD -->
+                            <a href="{{ route('dashboard') }}" class="btn btn-login-custom btn-lg px-5 py-3 rounded-pill shadow-lg text-decoration-none d-inline-flex align-items-center justify-content-center">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                <span class="fw-bold fs-5">MASUK KE SISTEM</span>
                             </a>
                             <p class="text-light mt-3 mb-0 small opacity-75">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Akses untuk Admin, Petugas, dan Warga terdaftar
+                                <i class="bi bi-shield-check me-1"></i>
+                                Dashboard pemantauan bencana secara real-time
                             </p>
                         </div>
                         
@@ -178,7 +178,7 @@
     </section>
     
     <style>
-        /* HANYA STYLE UNTUK TOMBOL LOGIN - TIDAK MENGUBAH STYLE LAIN */
+        /* HANYA STYLE UNTUK TOMBOL - TIDAK MENGUBAH STYLE LAIN */
         .btn-login-custom {
             background: linear-gradient(135deg, #0069d9 0%, #0056b3 100%);
             border: none;

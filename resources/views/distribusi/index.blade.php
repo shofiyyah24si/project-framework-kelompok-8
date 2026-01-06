@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Posko Bencana')
+@section('title', 'Data Distribusi Logistik')
 
 @section('content')
     <main class="py-5 bg-light">
@@ -9,11 +9,14 @@
             {{-- HEADER --}}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="h3 mb-1 fw-bold">Data Posko Bencana</h1>
-                    
+                    <h1 class="h3 mb-1 fw-bold">Data Distribusi Logistik</h1>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-truck me-1"></i>
+                        Monitoring penyaluran logistik ke posko bencana.
+                    </p>
                 </div>
 
-                
+                {{-- TOMBOL TAMBAH DIHAPUS --}}
             </div>
 
             {{-- NOTIFIKASI --}}
@@ -32,7 +35,7 @@
             {{-- CARD FILTER --}}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
-                    <form method="GET" action="{{ route('posko.index') }}">
+                    <form method="GET" action="{{ route('distribusi.index') }}">
                         <div class="row g-3 align-items-end">
                             {{-- PENCARIAN --}}
                             <div class="col-lg-4">
@@ -45,32 +48,43 @@
                                            name="search"
                                            class="form-control border-start-0"
                                            value="{{ request('search') }}"
-                                           placeholder="Cari nama, alamat, kontak, penanggung jawab...">
+                                           placeholder="Cari penerima, logistik, posko...">
                                 </div>
                             </div>
 
-                            {{-- FILTER KEJADIAN --}}
-                            <div class="col-lg-3">
-                                <label class="form-label fw-medium text-dark mb-1">Kejadian Bencana</label>
-                                <select name="kejadian_id" class="form-select">
-                                    <option value="">Semua kejadian</option>
-                                    @foreach ($listKejadian as $kejadian)
-                                        <option value="{{ $kejadian->kejadian_id }}" 
-                                                {{ request('kejadian_id') == $kejadian->kejadian_id ? 'selected' : '' }}>
-                                            {{ $kejadian->jenis_bencana }}
+                            {{-- FILTER TANGGAL --}}
+                            <div class="col-lg-2">
+                                <label class="form-label fw-medium text-dark mb-1">Tanggal</label>
+                                <input type="date" 
+                                       name="tanggal" 
+                                       class="form-control" 
+                                       value="{{ request('tanggal') }}">
+                            </div>
+
+                            {{-- FILTER LOGISTIK --}}
+                            <div class="col-lg-2">
+                                <label class="form-label fw-medium text-dark mb-1">Logistik</label>
+                                <select name="logistik_id" class="form-select">
+                                    <option value="">Semua Logistik</option>
+                                    @foreach ($listLogistik as $logistik)
+                                        <option value="{{ $logistik->logistik_id }}" {{ request('logistik_id') == $logistik->logistik_id ? 'selected' : '' }}>
+                                            {{ $logistik->nama_barang }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            {{-- FILTER LOKASI --}}
-                            <div class="col-lg-3">
-                                <label class="form-label fw-medium text-dark mb-1">Lokasi Posko</label>
-                                <input type="text"
-                                       name="lokasi"
-                                       class="form-control"
-                                       value="{{ request('lokasi') }}"
-                                       placeholder="Cari berdasarkan alamat...">
+                            {{-- FILTER POSKO --}}
+                            <div class="col-lg-2">
+                                <label class="form-label fw-medium text-dark mb-1">Posko</label>
+                                <select name="posko_id" class="form-select">
+                                    <option value="">Semua Posko</option>
+                                    @foreach ($listPosko as $posko)
+                                        <option value="{{ $posko->posko_id }}" {{ request('posko_id') == $posko->posko_id ? 'selected' : '' }}>
+                                            {{ $posko->nama }} <!-- PERBAIKAN: nama bukan nama_posko -->
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             {{-- TOMBOL AKSI --}}
@@ -79,7 +93,7 @@
                                     <button type="submit" class="btn btn-primary flex-grow-1">
                                         <i class="bi bi-funnel me-2"></i> Filter
                                     </button>
-                                    <a href="{{ route('posko.index') }}" class="btn btn-outline-secondary">
+                                    <a href="{{ route('distribusi.index') }}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-clockwise"></i>
                                     </a>
                                 </div>
@@ -94,7 +108,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="text-muted">
                         <i class="bi bi-info-circle me-1"></i>
-                        Ditemukan <strong>{{ $data->total() }}</strong> posko
+                        Ditemukan <strong>{{ $data->total() }}</strong> distribusi
                     </div>
                     <div class="text-muted small">
                         Halaman {{ $data->currentPage() }} dari {{ $data->lastPage() }}
@@ -104,28 +118,18 @@
                 {{-- GRID CARD DATA --}}
                 <div class="row g-4">
                     @foreach($data as $item)
-                        @php
-                            // Anda bisa menambahkan status posko jika ada di model
-                            // $status = $item->status_posko ?? 'Aktif';
-                            // $badgeClass = match($status) {
-                            //     'Aktif'    => 'bg-success',
-                            //     'Nonaktif' => 'bg-secondary',
-                            //     default    => 'bg-success',
-                            // };
-                        @endphp
-
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 border-0 shadow-sm">
                                 {{-- CARD HEADER --}}
                                 <div class="card-header bg-white border-0 pb-0 pt-3 px-3">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge bg-success px-3 py-2 fw-medium">
-                                            Aktif
+                                        <span class="badge bg-primary px-3 py-2 fw-medium">
+                                            <i class="bi bi-truck me-1"></i> Distribusi
                                         </span>
                                         <small class="text-muted">
                                             <i class="bi bi-calendar3 me-1"></i>
-                                            @if($item->created_at)
-                                                {{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}
+                                            @if($item->tanggal)
+                                                {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
                                             @else
                                                 -
                                             @endif
@@ -133,74 +137,70 @@
                                     </div>
                                     
                                     <h5 class="card-title mb-2 text-dark fw-bold">
-                                        {{ $item->nama ?? '-' }}
+                                        {{ $item->penerima ?? '-' }}
                                     </h5>
                                 </div>
 
                                 {{-- CARD BODY --}}
                                 <div class="card-body py-2 px-3">
-                                    {{-- KEJADIAN TERKAIT --}}
+                                    {{-- LOGISTIK --}}
                                     <div class="mb-3">
                                         <div class="d-flex align-items-start">
-                                            <i class="bi bi-exclamation-triangle text-muted mt-1 me-2"></i>
+                                            <i class="bi bi-box-seam text-muted mt-1 me-2"></i>
                                             <div>
                                                 <p class="mb-0 text-dark fw-medium">
-                                                    @if($item->kejadian)
-                                                        {{ $item->kejadian->jenis_bencana ?? '-' }}
-                                                    @else
-                                                        <span class="text-muted">Tidak terkait kejadian</span>
-                                                    @endif
+                                                    {{ $item->logistik->nama_barang ?? '-' }}
                                                 </p>
-                                                @if($item->kejadian && isset($item->kejadian->lokasi_text))
-                                                    <small class="text-muted">
-                                                        {{ $item->kejadian->lokasi_text }}
-                                                    </small>
-                                                @endif
+                                                <small class="text-muted">
+                                                    {{ $item->logistik->satuan ?? '-' }} | Stok: {{ $item->logistik->stok ?? 0 }}
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {{-- ALAMAT --}}
+                                    {{-- JUMLAH --}}
                                     <div class="mb-3">
-                                        <div class="d-flex align-items-start">
-                                            <i class="bi bi-geo-alt text-muted mt-1 me-2"></i>
-                                            <div>
-                                                <p class="mb-0 text-dark fw-medium">
-                                                    {{ \Illuminate\Support\Str::limit($item->alamat ?? '-', 50) }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- PENANGGUNG JAWAB --}}
-                                    <div class="mb-3">
-                                        <small class="text-muted d-block mb-1">Penanggung Jawab:</small>
-                                        <p class="mb-0 text-dark" style="font-size: 0.9rem;">
-                                            {{ $item->penanggung_jawab ?? '-' }}
+                                        <small class="text-muted d-block mb-1">Jumlah:</small>
+                                        <p class="mb-0 text-dark fs-5 fw-bold text-primary">
+                                            {{ $item->jumlah ?? 0 }}
                                         </p>
                                     </div>
 
-                                    {{-- KONTAK --}}
+                                    {{-- POSKO TUJUAN --}}
                                     <div class="mb-3">
-                                        <small class="text-muted d-block mb-1">Kontak:</small>
-                                        <p class="mb-0 text-dark" style="font-size: 0.9rem;">
-                                            {{ $item->kontak ?? '-' }}
+                                        <small class="text-muted d-block mb-1">Posko Tujuan:</small>
+                                        <p class="mb-0 text-dark" style="font-size: 0.9rem; min-height: 1.2rem;">
+                                            @if($item->posko)
+                                                {{ $item->posko->nama ?? '-' }} <!-- PERBAIKAN: nama bukan nama_posko -->
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
                                         </p>
                                     </div>
 
-                                    {{-- FOTO --}}
+                                    {{-- KETERANGAN --}}
+                                    <div class="mb-3">
+                                        <small class="text-muted d-block mb-1">Keterangan:</small>
+                                        <p class="mb-0 text-dark" style="font-size: 0.85rem; min-height: 1.2rem;">
+                                            @if(!empty(trim($item->keterangan ?? '')))
+                                                {{ \Illuminate\Support\Str::limit($item->keterangan, 80) }}
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </p>
+                                    </div>
+
+                                    {{-- BUKTI DISTRIBUSI --}}
                                     <div class="mb-3">
                                         <div class="d-flex align-items-center">
-                                            <i class="bi bi-camera me-2 {{ $item->foto ? 'text-primary' : 'text-muted' }}"></i>
+                                            <i class="bi bi-paperclip me-2 {{ $item->bukti_distribusi ? 'text-primary' : 'text-muted' }}"></i>
                                             <div>
-                                                @if($item->foto)
-                                                    <a href="{{ asset('storage/' . $item->foto) }}" 
-                                                       target="_blank"
-                                                       class="fw-medium text-primary text-decoration-none">
-                                                        Lihat foto posko
-                                                    </a>
+                                                @if($item->bukti_distribusi)
+                                                    <span class="fw-medium text-primary">
+                                                        Bukti tersedia
+                                                    </span>
                                                 @else
-                                                    <span class="text-muted">Tidak ada foto</span>
+                                                    <span class="text-muted">Tidak ada bukti</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -212,7 +212,7 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="btn-group btn-group-sm">
                                             {{-- DETAIL --}}
-                                            <a href="{{ route('posko.show', $item->posko_id) }}"
+                                            <a href="{{ route('distribusi.show', $item->distribusi_id) }}"
                                                class="btn btn-outline-primary border-end-0"
                                                title="Detail">
                                                 <i class="bi bi-eye me-1"></i> Detail
@@ -286,18 +286,15 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <div class="mb-4">
-                            <i class="bi bi-hospital display-4 text-muted"></i>
+                            <i class="bi bi-truck display-4 text-muted"></i>
                         </div>
-                        <h5 class="text-dark mb-3">Belum Ada Data Posko</h5>
+                        <h5 class="text-dark mb-3">Belum Ada Data Distribusi</h5>
                         <p class="text-muted mb-4">
-                            Tidak ada data posko bencana yang ditemukan sesuai filter.
+                            Tidak ada data distribusi logistik yang ditemukan sesuai filter.
                         </p>
                         <div class="d-flex justify-content-center gap-3">
-                            <a href="{{ route('posko.index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('distribusi.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-clockwise me-2"></i> Reset Filter
-                            </a>
-                            <a href="{{ route('posko.create') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i> Tambah Posko
                             </a>
                         </div>
                     </div>
@@ -312,11 +309,11 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-building text-primary fs-4"></i>
+                                        <i class="bi bi-box-seam text-primary fs-4"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Total Posko</h6>
-                                        <p class="text-muted small mb-0">Semua data posko</p>
+                                        <h6 class="mb-0 fw-bold">Total Distribusi</h6>
+                                        <p class="text-muted small mb-0">Semua penyaluran</p>
                                     </div>
                                     <div class="fs-4 fw-bold text-primary">
                                         {{ $data->total() }}
@@ -331,14 +328,14 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-hospital text-success fs-4"></i>
+                                        <i class="bi bi-check-circle-fill text-success fs-4"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Dengan Kejadian</h6>
-                                        <p class="text-muted small mb-0">Terkait bencana</p>
+                                        <h6 class="mb-0 fw-bold">Total Barang</h6>
+                                        <p class="text-muted small mb-0">Jumlah keseluruhan</p>
                                     </div>
                                     <div class="fs-4 fw-bold text-success">
-                                        {{ $data->where('kejadian_id', '!=', null)->count() }}
+                                        {{ $data->sum('jumlah') }}
                                     </div>
                                 </div>
                             </div>
@@ -350,14 +347,14 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-camera text-info fs-4"></i>
+                                        <i class="bi bi-calendar-check text-info fs-4"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Dengan Foto</h6>
-                                        <p class="text-muted small mb-0">Memiliki dokumentasi</p>
+                                        <h6 class="mb-0 fw-bold">Hari Ini</h6>
+                                        <p class="text-muted small mb-0">Distribusi hari ini</p>
                                     </div>
                                     <div class="fs-4 fw-bold text-info">
-                                        {{ $data->where('foto', '!=', null)->count() }}
+                                        {{ $data->where('tanggal', \Carbon\Carbon::today())->count() }}
                                     </div>
                                 </div>
                             </div>
@@ -403,14 +400,6 @@
     
     .btn-outline-primary:hover {
         background-color: rgba(13, 110, 253, 0.1);
-    }
-    
-    .btn-outline-warning:hover {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-    
-    .btn-outline-danger:hover {
-        background-color: rgba(220, 53, 69, 0.1);
     }
 </style>
 @endpush

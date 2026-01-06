@@ -12,7 +12,6 @@ class KejadianBencana extends Model
     protected $table = 'kejadian_bencana';
     protected $primaryKey = 'kejadian_id';
 
-    // HAPUS SEMUA YANG TIDAK ADA DI DATABASE
     protected $fillable = [
         'jenis_bencana',
         'tanggal',
@@ -22,16 +21,15 @@ class KejadianBencana extends Model
         'dampak',
         'status_kejadian',
         'keterangan',
-        'foto', // HANYA INI
+        'foto',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
     ];
 
-    protected $appends = ['foto_url']; // TAMBAHKAN INI
+    protected $appends = ['foto_url'];
 
-    // RENAME ACCESSOR agar tidak konflik
     public function getFotoUrlAttribute()
     {
         if (!$this->foto) {
@@ -40,14 +38,15 @@ class KejadianBencana extends Model
         return asset('storage/' . $this->foto);
     }
 
-    // RELATIONS
-    public function posko()
-    {
-        return $this->hasMany(PoskoBencana::class, 'kejadian_id');
-    }
-
-    public function files()
-    {
-        return $this->hasMany(KejadianFile::class, 'kejadian_id');
-    }
+    // HAPUS RELASI files() SELURUHNYA
+    // public function files()
+    // {
+    //     return $this->hasMany(KejadianFile::class, 'kejadian_id');
+    // }
+    
+    // HAPUS relasi posko() jika tidak dibutuhkan
+    // public function posko()
+    // {
+    //     return $this->hasMany(PoskoBencana::class, 'kejadian_id');
+    // }
 }

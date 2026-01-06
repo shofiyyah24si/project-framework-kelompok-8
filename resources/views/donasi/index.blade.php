@@ -16,9 +16,7 @@
                     </p>
                 </div>
 
-                <a href="{{ route('donasi.create') }}" class="btn btn-primary px-4">
-                    <i class="bi bi-plus-circle me-2"></i> Tambah Donasi
-                </a>
+                {{-- TIDAK ADA TOMBOL TAMBAH DONASI --}}
             </div>
 
             {{-- NOTIFIKASI --}}
@@ -40,7 +38,7 @@
                     <form method="GET" action="{{ route('donasi.index') }}">
                         <div class="row g-3 align-items-end">
                             {{-- PENCARIAN --}}
-                            <div class="col-lg-4">
+                            <div class="col-lg-5">
                                 <label class="form-label fw-medium text-dark mb-1">Pencarian</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0">
@@ -55,7 +53,7 @@
                             </div>
 
                             {{-- FILTER KEJADIAN --}}
-                            <div class="col-lg-2">
+                            <div class="col-lg-3">
                                 <label class="form-label fw-medium text-dark mb-1">Kejadian</label>
                                 <select name="kejadian_id" class="form-select">
                                     <option value="">Semua Kejadian</option>
@@ -77,17 +75,6 @@
                                     <option value="E-Wallet" {{ request('jenis') == 'E-Wallet' ? 'selected' : '' }}>E-Wallet</option>
                                     <option value="Barang" {{ request('jenis') == 'Barang' ? 'selected' : '' }}>Barang</option>
                                     <option value="Makanan" {{ request('jenis') == 'Makanan' ? 'selected' : '' }}>Makanan</option>
-                                </select>
-                            </div>
-
-                            {{-- FILTER STATUS --}}
-                            <div class="col-lg-2">
-                                <label class="form-label fw-medium text-dark mb-1">Status</label>
-                                <select name="status" class="form-select">
-                                    <option value="">Semua Status</option>
-                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                                    <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                                 </select>
                             </div>
 
@@ -122,30 +109,12 @@
                 {{-- GRID CARD DATA --}}
                 <div class="row g-4">
                     @foreach($data as $item)
-                        @php
-                            $status = $item->status ?? '-';
-                            $badgeClass = match($status) {
-                                'pending'  => 'bg-warning text-dark',
-                                'diterima' => 'bg-success',
-                                'ditolak'  => 'bg-danger',
-                                default    => 'bg-secondary',
-                            };
-                            $statusText = match($status) {
-                                'pending'  => 'Proses',
-                                'diterima' => 'Diterima',
-                                'ditolak'  => 'Ditolak',
-                                default    => '-',
-                            };
-                        @endphp
-
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 border-0 shadow-sm">
                                 {{-- CARD HEADER --}}
                                 <div class="card-header bg-white border-0 pb-0 pt-3 px-3">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge {{ $badgeClass }} px-3 py-2 fw-medium">
-                                            {{ $statusText }}
-                                        </span>
+                                        {{-- TANPA BADGE STATUS --}}
                                         <small class="text-muted">
                                             <i class="bi bi-calendar3 me-1"></i>
                                             @if($item->tanggal_donasi)
@@ -237,58 +206,16 @@
                                     </div>
                                 </div>
 
-                                {{-- CARD FOOTER (TOMBOL AKSI) --}}
+                                {{-- CARD FOOTER (HANYA DETAIL) --}}
                                 <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
                                     <div class="d-flex justify-content-between align-items-center">
+                                        {{-- TOMBOL DETAIL SAJA --}}
                                         <div class="btn-group btn-group-sm">
-                                            {{-- DETAIL --}}
                                             <a href="{{ route('donasi.show', $item->donasi_id) }}"
                                                class="btn btn-outline-primary border-end-0"
                                                title="Detail">
                                                 <i class="bi bi-eye me-1"></i> Detail
                                             </a>
-                                            
-                                            {{-- EDIT --}}
-                                            <a href="{{ route('donasi.edit', $item->donasi_id) }}"
-                                               class="btn btn-outline-warning"
-                                               title="Edit">
-                                                <i class="bi bi-pencil me-1"></i> Edit
-                                            </a>
-                                        </div>
-
-                                        {{-- QUICK STATUS UPDATE --}}
-                                        <div class="btn-group btn-group-sm">
-                                            @if($item->status != 'diterima')
-                                                <form action="{{ route('donasi.update', $item->donasi_id) }}" 
-                                                      method="POST" 
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('Setujui donasi ini?');">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="status" value="diterima">
-                                                    <button type="submit"
-                                                            class="btn btn-outline-success"
-                                                            title="Terima">
-                                                        <i class="bi bi-check"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-
-                                            @if($item->status != 'ditolak')
-                                                <form action="{{ route('donasi.update', $item->donasi_id) }}" 
-                                                      method="POST" 
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('Tolak donasi ini?');">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="status" value="ditolak">
-                                                    <button type="submit"
-                                                            class="btn btn-outline-danger"
-                                                            title="Tolak">
-                                                        <i class="bi bi-x"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -368,77 +295,14 @@
                             <a href="{{ route('donasi.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-clockwise me-2"></i> Reset Filter
                             </a>
-                            <a href="{{ route('donasi.create') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i> Tambah Donasi
-                            </a>
                         </div>
                     </div>
                 </div>
             @endif
 
-            {{-- STATISTIK CEPAT --}}
+            {{-- TOTAL DONASI SAJA --}}
             @if($data->count())
-                <div class="row mt-4 g-3">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-clock-history text-warning fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Pending</h6>
-                                        <p class="text-muted small mb-0">Memerlukan verifikasi</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-warning">
-                                        {{ $data->where('status', 'pending')->count() }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Diterima</h6>
-                                        <p class="text-muted small mb-0">Telah diverifikasi</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-success">
-                                        {{ $data->where('status', 'diterima')->count() }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-x-circle-fill text-danger fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Ditolak</h6>
-                                        <p class="text-muted small mb-0">Tidak disetujui</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-danger">
-                                        {{ $data->where('status', 'ditolak')->count() }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- TOTAL DONASI --}}
-                <div class="card border-0 shadow-sm mt-3">
+                <div class="card border-0 shadow-sm mt-4">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
@@ -446,7 +310,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <h6 class="mb-0 fw-bold">Total Nilai Donasi</h6>
-                                <p class="text-muted small mb-0">Keseluruhan donasi yang diterima</p>
+                                <p class="text-muted small mb-0">Keseluruhan donasi</p>
                             </div>
                             <div class="fs-4 fw-bold text-primary">
                                 Rp {{ number_format($totalDonasi, 0, ',', '.') }}
@@ -493,18 +357,6 @@
     
     .btn-outline-primary:hover {
         background-color: rgba(13, 110, 253, 0.1);
-    }
-    
-    .btn-outline-warning:hover {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-    
-    .btn-outline-danger:hover {
-        background-color: rgba(220, 53, 69, 0.1);
-    }
-    
-    .btn-outline-success:hover {
-        background-color: rgba(25, 135, 84, 0.1);
     }
 </style>
 @endpush

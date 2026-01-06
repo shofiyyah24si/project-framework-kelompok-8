@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Posko Bencana')
+@section('title', 'Data Warga')
 
 @section('content')
     <main class="py-5 bg-light">
@@ -9,11 +9,12 @@
             {{-- HEADER --}}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="h3 mb-1 fw-bold">Data Posko Bencana</h1>
-                    
+                    <h1 class="h3 mb-1 fw-bold">Data Warga</h1>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-people me-1"></i>
+                        Monitoring data warga berdasarkan laporan yang masuk.
+                    </p>
                 </div>
-
-                
             </div>
 
             {{-- NOTIFIKASI --}}
@@ -32,10 +33,10 @@
             {{-- CARD FILTER --}}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
-                    <form method="GET" action="{{ route('posko.index') }}">
+                    <form method="GET" action="{{ route('warga.index') }}">
                         <div class="row g-3 align-items-end">
                             {{-- PENCARIAN --}}
-                            <div class="col-lg-4">
+                            <div class="col-lg-5">
                                 <label class="form-label fw-medium text-dark mb-1">Pencarian</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0">
@@ -45,32 +46,28 @@
                                            name="search"
                                            class="form-control border-start-0"
                                            value="{{ request('search') }}"
-                                           placeholder="Cari nama, alamat, kontak, penanggung jawab...">
+                                           placeholder="Cari nama, NIK, atau pekerjaan...">
                                 </div>
                             </div>
 
-                            {{-- FILTER KEJADIAN --}}
+                            {{-- FILTER JENIS KELAMIN --}}
                             <div class="col-lg-3">
-                                <label class="form-label fw-medium text-dark mb-1">Kejadian Bencana</label>
-                                <select name="kejadian_id" class="form-select">
-                                    <option value="">Semua kejadian</option>
-                                    @foreach ($listKejadian as $kejadian)
-                                        <option value="{{ $kejadian->kejadian_id }}" 
-                                                {{ request('kejadian_id') == $kejadian->kejadian_id ? 'selected' : '' }}>
-                                            {{ $kejadian->jenis_bencana }}
-                                        </option>
-                                    @endforeach
+                                <label class="form-label fw-medium text-dark mb-1">Jenis Kelamin</label>
+                                <select name="jenis_kelamin" class="form-select">
+                                    <option value="">Semua</option>
+                                    <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                    <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
                             </div>
 
-                            {{-- FILTER LOKASI --}}
-                            <div class="col-lg-3">
-                                <label class="form-label fw-medium text-dark mb-1">Lokasi Posko</label>
-                                <input type="text"
-                                       name="lokasi"
+                            {{-- FILTER PEKERJAAN --}}
+                            <div class="col-lg-2">
+                                <label class="form-label fw-medium text-dark mb-1">Pekerjaan</label>
+                                <input type="text" 
+                                       name="pekerjaan" 
                                        class="form-control"
-                                       value="{{ request('lokasi') }}"
-                                       placeholder="Cari berdasarkan alamat...">
+                                       value="{{ request('pekerjaan') }}"
+                                       placeholder="Ketik...">
                             </div>
 
                             {{-- TOMBOL AKSI --}}
@@ -79,7 +76,7 @@
                                     <button type="submit" class="btn btn-primary flex-grow-1">
                                         <i class="bi bi-funnel me-2"></i> Filter
                                     </button>
-                                    <a href="{{ route('posko.index') }}" class="btn btn-outline-secondary">
+                                    <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-clockwise"></i>
                                     </a>
                                 </div>
@@ -90,28 +87,23 @@
             </div>
 
             {{-- INFO JUMLAH DATA --}}
-            @if($data->count())
+            @if($wargas->count())
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="text-muted">
                         <i class="bi bi-info-circle me-1"></i>
-                        Ditemukan <strong>{{ $data->total() }}</strong> posko
+                        Ditemukan <strong>{{ $wargas->total() }}</strong> data warga
                     </div>
                     <div class="text-muted small">
-                        Halaman {{ $data->currentPage() }} dari {{ $data->lastPage() }}
+                        Halaman {{ $wargas->currentPage() }} dari {{ $wargas->lastPage() }}
                     </div>
                 </div>
 
                 {{-- GRID CARD DATA --}}
                 <div class="row g-4">
-                    @foreach($data as $item)
+                    @foreach($wargas as $item)
                         @php
-                            // Anda bisa menambahkan status posko jika ada di model
-                            // $status = $item->status_posko ?? 'Aktif';
-                            // $badgeClass = match($status) {
-                            //     'Aktif'    => 'bg-success',
-                            //     'Nonaktif' => 'bg-secondary',
-                            //     default    => 'bg-success',
-                            // };
+                            $badgeClass = $item->jenis_kelamin == 'L' ? 'bg-primary' : 'bg-pink';
+                            $jenisKelamin = $item->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan';
                         @endphp
 
                         <div class="col-md-6 col-lg-4">
@@ -119,89 +111,65 @@
                                 {{-- CARD HEADER --}}
                                 <div class="card-header bg-white border-0 pb-0 pt-3 px-3">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge bg-success px-3 py-2 fw-medium">
-                                            Aktif
+                                        <span class="badge {{ $badgeClass }} px-3 py-2 fw-medium">
+                                            {{ $jenisKelamin }}
                                         </span>
                                         <small class="text-muted">
                                             <i class="bi bi-calendar3 me-1"></i>
-                                            @if($item->created_at)
-                                                {{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}
-                                            @else
-                                                -
-                                            @endif
+                                            {{ $item->created_at->format('d/m/Y') }}
                                         </small>
                                     </div>
                                     
                                     <h5 class="card-title mb-2 text-dark fw-bold">
-                                        {{ $item->nama ?? '-' }}
+                                        {{ $item->nama }}
                                     </h5>
+                                    <small class="text-muted">
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        NIK: {{ substr($item->no_ktp, 0, 4) }}***{{ substr($item->no_ktp, -4) }}
+                                    </small>
                                 </div>
 
                                 {{-- CARD BODY --}}
                                 <div class="card-body py-2 px-3">
-                                    {{-- KEJADIAN TERKAIT --}}
+                                    {{-- AGAMA --}}
                                     <div class="mb-3">
                                         <div class="d-flex align-items-start">
-                                            <i class="bi bi-exclamation-triangle text-muted mt-1 me-2"></i>
+                                            <i class="bi bi-book text-muted mt-1 me-2"></i>
                                             <div>
+                                                <small class="text-muted d-block mb-1">Agama</small>
                                                 <p class="mb-0 text-dark fw-medium">
-                                                    @if($item->kejadian)
-                                                        {{ $item->kejadian->jenis_bencana ?? '-' }}
-                                                    @else
-                                                        <span class="text-muted">Tidak terkait kejadian</span>
-                                                    @endif
-                                                </p>
-                                                @if($item->kejadian && isset($item->kejadian->lokasi_text))
-                                                    <small class="text-muted">
-                                                        {{ $item->kejadian->lokasi_text }}
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- ALAMAT --}}
-                                    <div class="mb-3">
-                                        <div class="d-flex align-items-start">
-                                            <i class="bi bi-geo-alt text-muted mt-1 me-2"></i>
-                                            <div>
-                                                <p class="mb-0 text-dark fw-medium">
-                                                    {{ \Illuminate\Support\Str::limit($item->alamat ?? '-', 50) }}
+                                                    {{ $item->agama ?? '-' }}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {{-- PENANGGUNG JAWAB --}}
+                                    {{-- PEKERJAAN --}}
                                     <div class="mb-3">
-                                        <small class="text-muted d-block mb-1">Penanggung Jawab:</small>
-                                        <p class="mb-0 text-dark" style="font-size: 0.9rem;">
-                                            {{ $item->penanggung_jawab ?? '-' }}
-                                        </p>
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-briefcase text-muted mt-1 me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block mb-1">Pekerjaan</small>
+                                                <p class="mb-0 text-dark fw-medium">
+                                                    {{ $item->pekerjaan ?? '-' }}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {{-- KONTAK --}}
                                     <div class="mb-3">
-                                        <small class="text-muted d-block mb-1">Kontak:</small>
-                                        <p class="mb-0 text-dark" style="font-size: 0.9rem;">
-                                            {{ $item->kontak ?? '-' }}
-                                        </p>
-                                    </div>
-
-                                    {{-- FOTO --}}
-                                    <div class="mb-3">
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-camera me-2 {{ $item->foto ? 'text-primary' : 'text-muted' }}"></i>
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-telephone text-muted mt-1 me-2"></i>
                                             <div>
-                                                @if($item->foto)
-                                                    <a href="{{ asset('storage/' . $item->foto) }}" 
-                                                       target="_blank"
-                                                       class="fw-medium text-primary text-decoration-none">
-                                                        Lihat foto posko
-                                                    </a>
-                                                @else
-                                                    <span class="text-muted">Tidak ada foto</span>
-                                                @endif
+                                                <small class="text-muted d-block mb-1">Kontak</small>
+                                                <p class="mb-0 text-dark" style="font-size: 0.9rem;">
+                                                    @if($item->telp)
+                                                        {{ $item->telp }}
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -210,10 +178,10 @@
                                 {{-- CARD FOOTER (TOMBOL AKSI) --}}
                                 <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div class="btn-group btn-group-sm">
-                                            {{-- DETAIL --}}
-                                            <a href="{{ route('posko.show', $item->posko_id) }}"
-                                               class="btn btn-outline-primary border-end-0"
+                                        {{-- TOMBOL DETAIL SAJA --}}
+                                        <div>
+                                            <a href="{{ route('warga.show', $item->warga_id) }}"
+                                               class="btn btn-outline-primary btn-sm"
                                                title="Detail">
                                                 <i class="bi bi-eye me-1"></i> Detail
                                             </a>
@@ -226,17 +194,17 @@
                 </div>
 
                 {{-- PAGINATION --}}
-                @if($data->hasPages())
+                @if($wargas->hasPages())
                     <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                         <div class="text-muted small">
                             <i class="bi bi-list-ul me-1"></i>
-                            Data {{ $data->firstItem() ?? 0 }} - {{ $data->lastItem() ?? 0 }} dari {{ $data->total() ?? 0 }}
+                            Data {{ $wargas->firstItem() ?? 0 }} - {{ $wargas->lastItem() ?? 0 }} dari {{ $wargas->total() ?? 0 }}
                         </div>
 
                         <nav aria-label="Navigasi halaman">
                             <ul class="pagination pagination-sm mb-0">
                                 {{-- PREVIOUS --}}
-                                @if($data->onFirstPage())
+                                @if($wargas->onFirstPage())
                                     <li class="page-item disabled">
                                         <span class="page-link border-0">
                                             <i class="bi bi-chevron-left"></i>
@@ -244,29 +212,29 @@
                                     </li>
                                 @else
                                     <li class="page-item">
-                                        <a class="page-link border-0" href="{{ $data->previousPageUrl() }}">
+                                        <a class="page-link border-0" href="{{ $wargas->previousPageUrl() }}">
                                             <i class="bi bi-chevron-left"></i>
                                         </a>
                                     </li>
                                 @endif
 
                                 {{-- PAGE NUMBERS --}}
-                                @for ($page = 1; $page <= $data->lastPage(); $page++)
-                                    @if($page == $data->currentPage())
+                                @for ($page = 1; $page <= $wargas->lastPage(); $page++)
+                                    @if($page == $wargas->currentPage())
                                         <li class="page-item active">
                                             <span class="page-link">{{ $page }}</span>
                                         </li>
                                     @else
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ $data->url($page) }}">{{ $page }}</a>
+                                            <a class="page-link" href="{{ $wargas->url($page) }}">{{ $page }}</a>
                                         </li>
                                     @endif
                                 @endfor
 
                                 {{-- NEXT --}}
-                                @if($data->hasMorePages())
+                                @if($wargas->hasMorePages())
                                     <li class="page-item">
-                                        <a class="page-link border-0" href="{{ $data->nextPageUrl() }}">
+                                        <a class="page-link border-0" href="{{ $wargas->nextPageUrl() }}">
                                             <i class="bi bi-chevron-right"></i>
                                         </a>
                                     </li>
@@ -286,18 +254,15 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <div class="mb-4">
-                            <i class="bi bi-hospital display-4 text-muted"></i>
+                            <i class="bi bi-people display-4 text-muted"></i>
                         </div>
-                        <h5 class="text-dark mb-3">Belum Ada Data Posko</h5>
+                        <h5 class="text-dark mb-3">Belum Ada Data Warga</h5>
                         <p class="text-muted mb-4">
-                            Tidak ada data posko bencana yang ditemukan sesuai filter.
+                            Tidak ada data warga yang ditemukan sesuai filter.
                         </p>
                         <div class="d-flex justify-content-center gap-3">
-                            <a href="{{ route('posko.index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-clockwise me-2"></i> Reset Filter
-                            </a>
-                            <a href="{{ route('posko.create') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i> Tambah Posko
                             </a>
                         </div>
                     </div>
@@ -305,21 +270,40 @@
             @endif
 
             {{-- STATISTIK CEPAT --}}
-            @if($data->count())
+            @if($wargas->count())
                 <div class="row mt-4 g-3">
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-building text-primary fs-4"></i>
+                                        <i class="bi bi-person-fill text-primary fs-4"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Total Posko</h6>
-                                        <p class="text-muted small mb-0">Semua data posko</p>
+                                        <h6 class="mb-0 fw-bold">Laki-laki</h6>
+                                        <p class="text-muted small mb-0">Jumlah warga laki-laki</p>
                                     </div>
                                     <div class="fs-4 fw-bold text-primary">
-                                        {{ $data->total() }}
+                                        {{ $wargas->where('jenis_kelamin', 'L')->count() }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-pink bg-opacity-10 p-2 rounded me-3">
+                                        <i class="bi bi-person-hearts text-pink fs-4"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0 fw-bold">Perempuan</h6>
+                                        <p class="text-muted small mb-0">Jumlah warga perempuan</p>
+                                    </div>
+                                    <div class="fs-4 fw-bold text-pink">
+                                        {{ $wargas->where('jenis_kelamin', 'P')->count() }}
                                     </div>
                                 </div>
                             </div>
@@ -331,33 +315,14 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-hospital text-success fs-4"></i>
+                                        <i class="bi bi-people-fill text-success fs-4"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Dengan Kejadian</h6>
-                                        <p class="text-muted small mb-0">Terkait bencana</p>
+                                        <h6 class="mb-0 fw-bold">Total Warga</h6>
+                                        <p class="text-muted small mb-0">Semua data warga</p>
                                     </div>
                                     <div class="fs-4 fw-bold text-success">
-                                        {{ $data->where('kejadian_id', '!=', null)->count() }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-camera text-info fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Dengan Foto</h6>
-                                        <p class="text-muted small mb-0">Memiliki dokumentasi</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-info">
-                                        {{ $data->where('foto', '!=', null)->count() }}
+                                        {{ $wargas->total() }}
                                     </div>
                                 </div>
                             </div>
@@ -387,6 +352,14 @@
         letter-spacing: 0.3px;
     }
     
+    .bg-pink {
+        background-color: #e83e8c !important;
+    }
+    
+    .text-pink {
+        color: #e83e8c !important;
+    }
+    
     .page-link {
         border-radius: 0.375rem;
         margin: 0 2px;
@@ -397,20 +370,8 @@
         border-color: #0d6efd;
     }
     
-    .btn-group .btn {
-        border-radius: 0.375rem;
-    }
-    
     .btn-outline-primary:hover {
         background-color: rgba(13, 110, 253, 0.1);
-    }
-    
-    .btn-outline-warning:hover {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-    
-    .btn-outline-danger:hover {
-        background-color: rgba(220, 53, 69, 0.1);
     }
 </style>
 @endpush

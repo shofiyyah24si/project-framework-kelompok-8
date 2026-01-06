@@ -26,17 +26,17 @@ class DonasiBencanaController extends Controller
             });
         }
 
-        // Filter by status
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
+        // HAPUS FILTER STATUS
+        // if ($request->status) {
+        //     $query->where('status', $request->status);
+        // }
 
         // Filter by kejadian
         if ($request->kejadian_id) {
             $query->where('kejadian_id', $request->kejadian_id);
         }
 
-        // ✅ TAMBAHKAN FILTER JENIS INI:
+        // Filter jenis
         if ($request->jenis) {
             $query->where('jenis', $request->jenis);
         }
@@ -44,16 +44,16 @@ class DonasiBencanaController extends Controller
         $data = $query->latest()->paginate(10)->withQueryString();
         $totalDonasi = DonasiBencana::sum('nilai');
         $listKejadian = KejadianBencana::select('kejadian_id', 'jenis_bencana')->get();
-        $statusList = ['pending', 'diterima', 'ditolak'];
         
-        // ✅ TAMBAHKAN INI untuk dropdown jenis:
+        // HAPUS $statusList
+        // $statusList = ['pending', 'diterima', 'ditolak'];
+        
+        // List untuk dropdown jenis
         $jenisList = ['Uang Tunai', 'Transfer Bank', 'E-Wallet', 'Barang', 'Makanan', 'Obat-obatan', 'Pakaian', 'Lainnya'];
 
-        // ✅ TAMBAHKAN $jenisList ke compact():
-        return view('donasi.index', compact('data', 'totalDonasi', 'listKejadian', 'statusList', 'jenisList'));
+        // HAPUS $statusList dari compact()
+        return view('donasi.index', compact('data', 'totalDonasi', 'listKejadian', 'jenisList'));
     }
-
-    // ... method lainnya TETAP SAMA seperti yang sudah ada ...
     
     public function create()
     {
@@ -75,7 +75,8 @@ class DonasiBencanaController extends Controller
                 'keterangan' => 'nullable|string',
                 'tanggal_donasi' => 'required|date',
                 'metode_pembayaran' => 'nullable|string|max:100',
-                'status' => 'required|in:pending,diterima,ditolak'
+                // HAPUS VALIDASI STATUS
+                // 'status' => 'required|in:pending,diterima,ditolak'
             ]);
 
             if ($request->hasFile('bukti_donasi')) {
@@ -97,8 +98,6 @@ class DonasiBencanaController extends Controller
                 ->with('error', 'Gagal menyimpan data donasi: ' . $e->getMessage());
         }
     }
-
-    // ... method lainnya TETAP SAMA ...
 
     public function edit($id)
     {
@@ -124,7 +123,8 @@ class DonasiBencanaController extends Controller
                 'keterangan' => 'nullable|string',
                 'tanggal_donasi' => 'required|date',
                 'metode_pembayaran' => 'nullable|string|max:100',
-                'status' => 'required|in:pending,diterima,ditolak'
+                // HAPUS VALIDASI STATUS
+                // 'status' => 'required|in:pending,diterima,ditolak'
             ]);
 
             if ($request->hasFile('bukti_donasi')) {

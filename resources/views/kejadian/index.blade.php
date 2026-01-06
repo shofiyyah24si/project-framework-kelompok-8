@@ -16,9 +16,7 @@
                     </p>
                 </div>
 
-                <a href="{{ route('kejadian.create') }}" class="btn btn-primary px-4">
-                    <i class="bi bi-plus-circle me-2"></i> Tambah Kejadian
-                </a>
+                {{-- TOMBOL TAMBAH DIHAPUS --}}
             </div>
 
             {{-- NOTIFIKASI --}}
@@ -145,10 +143,10 @@
                                         <small class="text-muted">
                                             <i class="bi bi-calendar3 me-1"></i>
                                             @if($item->tanggal)
-    {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
-@else
-    -
-@endif
+                                                {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
+                                            @else
+                                                -
+                                            @endif
                                         </small>
                                     </div>
                                     
@@ -198,16 +196,15 @@
                                         </p>
                                     </div>
 
-                                    {{-- DOKUMENTASI --}}
+                                    {{-- FOTO --}}
                                     <div class="mb-3">
                                         <div class="d-flex align-items-center">
-                                            <i class="bi bi-paperclip me-2 {{ $item->files->count() ? 'text-primary' : 'text-muted' }}"></i>
+                                            <i class="bi bi-image me-2 {{ $item->foto ? 'text-primary' : 'text-muted' }}"></i>
                                             <div>
-                                                @if($item->files->count())
-                                                    <span class="fw-medium text-primary">{{ $item->files->count() }}</span>
-                                                    <small class="text-muted ms-1">file dokumentasi</small>
+                                                @if($item->foto)
+                                                    <span class="fw-medium text-primary">Ada foto</span>
                                                 @else
-                                                    <span class="text-muted">-</span>
+                                                    <span class="text-muted">Tidak ada foto</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -217,34 +214,14 @@
                                 {{-- CARD FOOTER (TOMBOL AKSI) --}}
                                 <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div class="btn-group btn-group-sm">
-                                            {{-- DETAIL --}}
+                                        {{-- TOMBOL DETAIL SAJA --}}
+                                        <div>
                                             <a href="{{ route('kejadian.show', $item->kejadian_id) }}"
-                                               class="btn btn-outline-primary border-end-0"
+                                               class="btn btn-outline-primary btn-sm"
                                                title="Detail">
                                                 <i class="bi bi-eye me-1"></i> Detail
                                             </a>
-                                            
-                                            {{-- EDIT --}}
-                                            <a href="{{ route('kejadian.edit', $item->kejadian_id) }}"
-                                               class="btn btn-outline-warning"
-                                               title="Edit">
-                                                <i class="bi bi-pencil me-1"></i> Edit
-                                            </a>
                                         </div>
-
-                                        {{-- HAPUS --}}
-                                        <form action="{{ route('kejadian.destroy', $item->kejadian_id) }}"
-                                              method="POST"
-                                              onsubmit="return confirm('Hapus kejadian ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="btn btn-outline-danger btn-sm"
-                                                    title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -322,9 +299,6 @@
                         <div class="d-flex justify-content-center gap-3">
                             <a href="{{ route('kejadian.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-clockwise me-2"></i> Reset Filter
-                            </a>
-                            <a href="{{ route('kejadian.create') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i> Tambah Kejadian
                             </a>
                         </div>
                     </div>
@@ -424,20 +398,8 @@
         border-color: #0d6efd;
     }
     
-    .btn-group .btn {
-        border-radius: 0.375rem;
-    }
-    
     .btn-outline-primary:hover {
         background-color: rgba(13, 110, 253, 0.1);
-    }
-    
-    .btn-outline-warning:hover {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-    
-    .btn-outline-danger:hover {
-        background-color: rgba(220, 53, 69, 0.1);
     }
 </style>
 @endpush

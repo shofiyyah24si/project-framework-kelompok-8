@@ -15,31 +15,46 @@ class KejadianController extends Controller
     |--------------------------------------------------------------------------
     */
     public function index(Request $request)
-    {
-        $query = KejadianBencana::with('files');
+{
+    $query = KejadianBencana::query();
 
-        if ($request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('jenis_bencana', 'like', "%$search%")
-                    ->orWhere('lokasi_text', 'like', "%$search%")
-                    ->orWhere('dampak', 'like', "%$search%")
-                    ->orWhere('status_kejadian', 'like', "%$search%")
-                    ->orWhere('keterangan', 'like', "%$search%");
-            });
-        }
-
-        if ($request->rt) $query->where('rt', $request->rt);
-        if ($request->rw) $query->where('rw', $request->rw);
-        if ($request->status) $query->where('status_kejadian', $request->status);
-
-        $data = $query->latest()->paginate(5)->withQueryString();
-        $listRT = KejadianBencana::select('rt')->distinct()->orderBy('rt')->pluck('rt');
-        $listRW = KejadianBencana::select('rw')->distinct()->orderBy('rw')->pluck('rw');
-        $listStatus = ['Baru', 'Proses', 'Selesai'];
-
-        return view('kejadian.index', compact('data', 'listRT', 'listRW', 'listStatus'));
+    if ($request->search) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('jenis_bencana', 'like', "%$search%")
+                ->orWhere('lokasi_text', 'like', "%$search%")
+                ->orWhere('dampak', 'like', "%$search%")
+                ->orWhere('status_kejadian', 'like', "%$search%")
+                ->orWhere('keterangan', 'like', "%$search%");
+        });
     }
+
+    if ($request->rt) $query->where('rt', $request->rt);
+    if ($request->rw) $query->where('rw', $request->rw);
+    if ($request->status) $query->where('status_kejadian', $request->status);
+
+    $data = $query->latest()->paginate(5)->withQueryString();
+    $listRT = KejadianBencana::select('rt')->distinct()->orderBy('rt')->pluck('rt');
+    $listRW = KejadianBencana::select('rw')->distinct()->orderBy('rw')->pluck('rw');
+    
+    // ⬇️⬇️⬇️ INI YANG DIUBAH ⬇️⬇️⬇️
+    $listStatus = ['Dilaporkan', 'Verifikasi', 'Selesai'];
+    // ⬆️⬆️⬆️ GANTI SAJA INI ⬆️⬆️⬆️
+    
+    // ========== TAMBAHKAN KEDUA VARIABLE INI ==========
+    $listLogistik = \App\Models\LogistikBencana::all();
+    $listPosko = \App\Models\PoskoBencana::all();
+    // ========== PERBAIKAN SELESAI ==========
+
+    return view('kejadian.index', compact(
+        'data', 
+        'listRT', 
+        'listRW', 
+        'listStatus',
+        'listLogistik',
+        'listPosko'
+    ));
+}
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +80,7 @@ class KejadianController extends Controller
             'rt'              => 'required|string|max:10',
             'rw'              => 'required|string|max:10',
             'dampak'          => 'required|string',
-            'status_kejadian' => 'required|in:Baru,Proses,Selesai',
+            'status_kejadian' => 'required|in:Dilaporkan,Verifikasi,Selesai',
             'keterangan'      => 'nullable|string',
 
             // Foto utama
@@ -86,19 +101,20 @@ class KejadianController extends Controller
 
         $kejadian = KejadianBencana::create($validated);
 
+        // PERBAIKAN: KOMENTARI UPLOAD KE TABEL kejadian_files KARENA TABEL TIDAK ADA
         // Upload dokumentasi tambahan (kalau ada)
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('kejadian/dokumentasi', $filename, 'public');
-
-                KejadianFile::create([
-                    'kejadian_id' => $kejadian->kejadian_id,
-                    'nama_file'   => $filename,
-                    'tipe'        => $file->extension(),
-                ]);
-            }
-        }
+        // if ($request->hasFile('files')) {
+        //     foreach ($request->file('files') as $file) {
+        //         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        //         $file->storeAs('kejadian/dokumentasi', $filename, 'public');
+        // 
+        //         KejadianFile::create([
+        //             'kejadian_id' => $kejadian->kejadian_id,
+        //             'nama_file'   => $filename,
+        //             'tipe'        => $file->extension(),
+        //         ]);
+        //     }
+        // }
 
         return redirect()
             ->route('kejadian.index')
@@ -112,7 +128,8 @@ class KejadianController extends Controller
     */
     public function show($id)
     {
-        $data = KejadianBencana::with('files')->findOrFail($id);
+        // PERBAIKAN: HAPUS with('files')
+        $data = KejadianBencana::findOrFail($id); // HAPUS: ->with('files')
         return view('kejadian.show', compact('data'));
     }
 
@@ -123,7 +140,8 @@ class KejadianController extends Controller
     */
     public function edit($id)
     {
-        $data = KejadianBencana::with('files')->findOrFail($id);
+        // PERBAIKAN: HAPUS with('files')
+        $data = KejadianBencana::findOrFail($id); // HAPUS: ->with('files')
         
         return view('kejadian.edit', compact('data'));
     }
@@ -135,7 +153,8 @@ class KejadianController extends Controller
     */
     public function update(Request $request, $id)
     {
-        $kejadian = KejadianBencana::findOrFail($id);
+        // PERBAIKAN: HAPUS with('files')
+        $kejadian = KejadianBencana::findOrFail($id); // HAPUS: ->with('files')
 
         $validated = $request->validate([
             'jenis_bencana'   => 'required|string|max:255',
@@ -144,7 +163,7 @@ class KejadianController extends Controller
             'rt'              => 'required|string|max:10',
             'rw'              => 'required|string|max:10',
             'dampak'          => 'required|string',
-            'status_kejadian' => 'required|in:Baru,Proses,Selesai',
+            'status_kejadian' => 'required|in:Dilaporkan,Verifikasi,Selesai',
             'keterangan'      => 'nullable|string',
 
             'foto'            => 'nullable|image|max:2048',
@@ -170,19 +189,20 @@ class KejadianController extends Controller
         // Update data utama
         $kejadian->update($validated);
 
+        // PERBAIKAN: KOMENTARI UPLOAD KE TABEL kejadian_files
         // Upload dokumentasi tambahan (kalau ada)
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('kejadian/dokumentasi', $filename, 'public');
-
-                KejadianFile::create([
-                    'kejadian_id' => $kejadian->kejadian_id,
-                    'nama_file'   => $filename,
-                    'tipe'        => $file->extension(),
-                ]);
-            }
-        }
+        // if ($request->hasFile('files')) {
+        //     foreach ($request->file('files') as $file) {
+        //         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        //         $file->storeAs('kejadian/dokumentasi', $filename, 'public');
+        // 
+        //         KejadianFile::create([
+        //             'kejadian_id' => $kejadian->kejadian_id,
+        //             'nama_file'   => $filename,
+        //             'tipe'        => $file->extension(),
+        //         ]);
+        //     }
+        // }
 
         return redirect()
             ->route('kejadian.index')
@@ -196,21 +216,23 @@ class KejadianController extends Controller
     */
     public function destroy($id)
     {
-        $kejadian = KejadianBencana::with('files')->findOrFail($id);
+        // PERBAIKAN: HAPUS with('files')
+        $kejadian = KejadianBencana::findOrFail($id); // HAPUS: ->with('files')
 
         // Hapus foto utama
         if ($kejadian->foto && Storage::disk('public')->exists($kejadian->foto)) {
             Storage::disk('public')->delete($kejadian->foto);
         }
 
+        // PERBAIKAN: KOMENTARI PENGHAPUSAN FILE DOKUMENTASI
         // Hapus file dokumentasi
-        foreach ($kejadian->files as $file) {
-            $path = 'kejadian/dokumentasi/' . $file->nama_file;
-            if (Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-            }
-            $file->delete();
-        }
+        // foreach ($kejadian->files as $file) {
+        //     $path = 'kejadian/dokumentasi/' . $file->nama_file;
+        //     if (Storage::disk('public')->exists($path)) {
+        //         Storage::disk('public')->delete($path);
+        //     }
+        //     $file->delete();
+        // }
 
         $kejadian->delete();
 
@@ -224,16 +246,20 @@ class KejadianController extends Controller
     */
     public function deleteFile($id)
     {
-        $file = KejadianFile::findOrFail($id);
-
-        $path = 'kejadian/dokumentasi/' . $file->nama_file;
-
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-        }
-
-        $file->delete();
-
-        return back()->with('success', 'File dokumentasi berhasil dihapus.');
+        // PERBAIKAN: KOMENTARI METHOD INI KARENA TABEL kejadian_files TIDAK ADA
+        // $file = KejadianFile::findOrFail($id);
+        // 
+        // $path = 'kejadian/dokumentasi/' . $file->nama_file;
+        // 
+        // if (Storage::disk('public')->exists($path)) {
+        //     Storage::disk('public')->delete($path);
+        // }
+        // 
+        // $file->delete();
+        // 
+        // return back()->with('success', 'File dokumentasi berhasil dihapus.');
+        
+        // Alternatif: langsung return tanpa action
+        return back()->with('info', 'Fitur penghapusan file dokumentasi dinonaktifkan.');
     }
 }

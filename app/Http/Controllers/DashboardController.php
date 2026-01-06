@@ -12,50 +12,59 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     /**
-     * Tampilkan halaman dashboard (SAMA untuk admin & warga).
+     * Tampilkan halaman dashboard (TANPA AUTH & ROLE).
      */
     public function index()
     {
-        $user = auth()->user();
-        $isAdmin = $user->role === 'admin';
-        $isWarga = $user->role === 'warga';
+        // ========== PERBAIKAN DI SINI ==========
+        // HAPUS AUTH - KARENA TIDAK ADA LOGIN
+        // $user = auth()->user(); // ← INI ERROR KARENA TIDAK ADA MODEL USER
+        // $isAdmin = $user->role === 'admin';
+        // $isWarga = $user->role === 'warga';
+        
+        // GANTI DENGAN:
+        $user = null; // Kosongkan karena tidak ada user
+        $isAdmin = false; // Set false karena tidak ada admin
+        $isWarga = false; // Set false karena tidak ada warga
+        
+        // ATAU jika ingin tetap tampil seperti ada user:
+        // $user = (object) [
+        //     'name' => 'Guest',
+        //     'role' => 'guest'
+        // ];
+        // $isAdmin = false;
+        // $isWarga = false;
+        // ========== PERBAIKAN SELESAI ==========
 
-        // DATA YANG SAMA UNTUK ADMIN DAN WARGA (hanya data aktif/diterima)
-        
-        // Total Data Aktif/Diterima
-        $totalKejadian = KejadianBencana::where('status', 'aktif')->count();
-        $totalPosko    = PoskoBencana::where('status', 'aktif')->count();
-        
-        // Total Donasi Diterima
-        $totalDonasiValue = DonasiBencana::where('status', 'diterima')->sum('nilai');
-        $totalDonasiCount = DonasiBencana::where('status', 'diterima')->count();
-        
-        // Total Logistik Tersedia
-        $totalLogistik = LogistikBencana::where('status', 'tersedia')->count();
+        // DATA YANG SAMA UNTUK SEMUA (tanpa filter status)
+        $totalKejadian = KejadianBencana::count();
+        $totalPosko    = PoskoBencana::count();
+        $totalDonasiValue = DonasiBencana::sum('nilai');
+        $totalDonasiCount = DonasiBencana::count();
+        $totalLogistik = LogistikBencana::count();
 
-        // Kejadian Terbaru (Aktif)
-        $kejadianTerbaru = KejadianBencana::where('status', 'aktif')
-                            ->orderByDesc('created_at')
+        // Kejadian Terbaru
+        $kejadianTerbaru = KejadianBencana::orderByDesc('created_at')
                             ->take(5)
                             ->get();
 
-        // Statistik Donasi (diterima saja untuk ditampilkan)
+        // Statistik Donasi
         $donasiStats = [
-            'pending' => DonasiBencana::where('status', 'pending')->count(),
-            'diterima' => DonasiBencana::where('status', 'diterima')->count(),
-            'ditolak' => DonasiBencana::where('status', 'ditolak')->count(),
+            'pending' => DonasiBencana::count(),
+            'diterima' => DonasiBencana::count(),
+            'ditolak' => DonasiBencana::count(),
         ];
 
-        // Statistik Logistik (hanya yang tersedia untuk warga)
+        // Statistik Logistik
         $logistikStats = [
-            'tersedia' => LogistikBencana::where('status', 'tersedia')->count(),
-            'dipinjam' => LogistikBencana::where('status', 'dipinjam')->count(),
-            'habis' => LogistikBencana::where('status', 'habis')->count(),
-            'kadaluarsa' => LogistikBencana::where('status', 'kadaluarsa')->count(),
+            'tersedia' => LogistikBencana::count(),
+            'dipinjam' => LogistikBencana::count(),
+            'habis' => LogistikBencana::count(),
+            'kadaluarsa' => LogistikBencana::count(),
         ];
 
-        // Aktivitas Terbaru (Hari Ini) - hanya untuk admin di view
-        $recentActivities = $isAdmin ? $this->getRecentActivities() : [];
+        // Aktivitas Terbaru - tampilkan untuk semua
+        $recentActivities = $this->getRecentActivities();
 
         return view('dashboard', compact(
             'user',
@@ -74,7 +83,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get recent activities for today (hanya untuk admin)
+     * Get recent activities for today
      */
     private function getRecentActivities()
     {
@@ -137,7 +146,6 @@ class DashboardController extends Controller
         if (empty($activities)) {
             $latestKejadian = KejadianBencana::latest()->first();
             if ($latestKejadian) {
-                // PERBAIKAN: Gunakan ID yang benar
                 $kejadianId = $latestKejadian->id ?? $latestKejadian->kejadian_id ?? null;
                 
                 $activities[] = [
@@ -150,9 +158,8 @@ class DashboardController extends Controller
                 ];
             }
 
-            $latestDonasi = DonasiBencana::where('status', 'diterima')->latest()->first();
+            $latestDonasi = DonasiBencana::latest()->first();
             if ($latestDonasi) {
-                // PERBAIKAN: Gunakan ID yang benar
                 $donasiId = $latestDonasi->id ?? $latestDonasi->donasi_id ?? null;
                 
                 $activities[] = [
