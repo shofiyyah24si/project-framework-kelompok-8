@@ -47,7 +47,7 @@ class PoskoController extends Controller
         }
 
         // PAGINATION
-        $data = $query->latest()->paginate(3)->withQueryString();
+        $data = $query->latest()->paginate(10)->withQueryString();
 
         // DROPDOWN
         $listKejadian = KejadianBencana::select('kejadian_id', 'jenis_bencana')->get();

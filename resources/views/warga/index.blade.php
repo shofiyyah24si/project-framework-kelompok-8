@@ -55,8 +55,9 @@
                                 <label class="form-label fw-medium text-dark mb-1">Jenis Kelamin</label>
                                 <select name="jenis_kelamin" class="form-select">
                                     <option value="">Semua</option>
-                                    <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                    {{-- 🔧 PERBAIKAN: value harus "Laki-laki"/"Perempuan" bukan "L"/"P" --}}
+                                    <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                    <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
                             </div>
 
@@ -102,8 +103,10 @@
                 <div class="row g-4">
                     @foreach($wargas as $item)
                         @php
-                            $badgeClass = $item->jenis_kelamin == 'L' ? 'bg-primary' : 'bg-pink';
-                            $jenisKelamin = $item->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan';
+                            //{{-- 🔧 PERBAIKAN: Bandingkan dengan "Laki-laki" bukan "L" --}}
+                            $badgeClass = $item->jenis_kelamin == 'Laki-laki' ? 'bg-primary' : 'bg-pink';
+                            //{{-- 🔧 PERBAIKAN: Langsung pakai nilai dari database --}}
+                            $jenisKelamin = $item->jenis_kelamin;
                         @endphp
 
                         <div class="col-md-6 col-lg-4">
@@ -284,7 +287,8 @@
                                         <p class="text-muted small mb-0">Jumlah warga laki-laki</p>
                                     </div>
                                     <div class="fs-4 fw-bold text-primary">
-                                        {{ $wargas->where('jenis_kelamin', 'L')->count() }}
+                                        {{-- 🔧 PERBAIKAN: Bandingkan dengan "Laki-laki" bukan "L" --}}
+                                        {{ $wargas->where('jenis_kelamin', 'Laki-laki')->count() }}
                                     </div>
                                 </div>
                             </div>
@@ -303,7 +307,8 @@
                                         <p class="text-muted small mb-0">Jumlah warga perempuan</p>
                                     </div>
                                     <div class="fs-4 fw-bold text-pink">
-                                        {{ $wargas->where('jenis_kelamin', 'P')->count() }}
+                                        {{-- 🔧 PERBAIKAN: Bandingkan dengan "Perempuan" bukan "P" --}}
+                                        {{ $wargas->where('jenis_kelamin', 'Perempuan')->count() }}
                                     </div>
                                 </div>
                             </div>

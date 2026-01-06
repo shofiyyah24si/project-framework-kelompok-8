@@ -43,7 +43,7 @@ class LogistikBencanaController extends Controller
             $query->latest();
         }
 
-        $data = $query->paginate(10)->withQueryString();
+        $data = $query->paginate(3)->withQueryString();
         $totalStok = LogistikBencana::sum('stok');
         $listKejadian = KejadianBencana::select('kejadian_id', 'jenis_bencana')->get();
         

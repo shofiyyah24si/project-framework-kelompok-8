@@ -47,7 +47,8 @@ class WargaController extends Controller
         $validator = Validator::make($request->all(), [
             'no_ktp' => 'required|unique:warga,no_ktp|numeric|digits:16',
             'nama' => 'required|string|max:100',
-            'jenis_kelamin' => 'required|in:L,P',
+            // 🔧 UBAH INI:
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan', // dari 'in:L,P'
             'agama' => 'required|string|max:50',
             'pekerjaan' => 'required|string|max:100',
             'telp' => 'nullable|string|max:20',
@@ -85,7 +86,8 @@ class WargaController extends Controller
         $validator = Validator::make($request->all(), [
             'no_ktp' => 'required|unique:warga,no_ktp,' . $warga->warga_id . ',warga_id|numeric|digits:16',
             'nama' => 'required|string|max:100',
-            'jenis_kelamin' => 'required|in:L,P',
+            // 🔧 UBAH INI JUGA:
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan', // dari 'in:L,P'
             'agama' => 'required|string|max:50',
             'pekerjaan' => 'required|string|max:100',
             'telp' => 'nullable|string|max:20',

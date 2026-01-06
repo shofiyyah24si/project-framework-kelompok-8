@@ -6,182 +6,110 @@ use App\Models\KejadianBencana;
 use App\Models\PoskoBencana;
 use App\Models\DonasiBencana;
 use App\Models\LogistikBencana;
-use Illuminate\Http\Request;
+use App\Models\DistribusiLogistik;
+use App\Models\Warga;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    /**
-     * Tampilkan halaman dashboard (TANPA AUTH & ROLE).
-     */
     public function index()
     {
-        // ========== PERBAIKAN DI SINI ==========
-        // HAPUS AUTH - KARENA TIDAK ADA LOGIN
-        // $user = auth()->user(); // ← INI ERROR KARENA TIDAK ADA MODEL USER
-        // $isAdmin = $user->role === 'admin';
-        // $isWarga = $user->role === 'warga';
-        
-        // GANTI DENGAN:
-        $user = null; // Kosongkan karena tidak ada user
-        $isAdmin = false; // Set false karena tidak ada admin
-        $isWarga = false; // Set false karena tidak ada warga
-        
-        // ATAU jika ingin tetap tampil seperti ada user:
-        // $user = (object) [
-        //     'name' => 'Guest',
-        //     'role' => 'guest'
-        // ];
-        // $isAdmin = false;
-        // $isWarga = false;
-        // ========== PERBAIKAN SELESAI ==========
-
-        // DATA YANG SAMA UNTUK SEMUA (tanpa filter status)
+        // ========== KEJADIAN BENCANA ==========
         $totalKejadian = KejadianBencana::count();
-        $totalPosko    = PoskoBencana::count();
-        $totalDonasiValue = DonasiBencana::sum('nilai');
+        $kejadianAktif = KejadianBencana::where('status_kejadian', 'Dilaporkan')->count();
+        $kejadianVerifikasi = KejadianBencana::where('status_kejadian', 'Verifikasi')->count();
+        $kejadianSelesai = KejadianBencana::where('status_kejadian', 'Selesai')->count();
+        
+        // Kejadian Terbaru (untuk tabel)
+        $kejadianTerbaru = KejadianBencana::orderBy('tanggal', 'desc')
+            ->take(5)
+            ->get(['kejadian_id', 'jenis_bencana', 'tanggal', 'lokasi_text', 'dampak', 'status_kejadian']);
+        
+        // Statistik jenis bencana
+        $jenisBencanaStats = KejadianBencana::select('jenis_bencana', DB::raw('COUNT(*) as total'))
+            ->groupBy('jenis_bencana')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+        
+        // ========== POSKO BENCANA ==========
+        $totalPosko = PoskoBencana::count();
+        $poskoList = PoskoBencana::with('kejadian')  // ← UBAH: 'kejadianBencana' menjadi 'kejadian'
+            ->orderByDesc('created_at')
+            ->take(3)
+            ->get(['posko_id', 'nama', 'alamat', 'kontak', 'kejadian_id']);
+        
+        // ========== DONASI BENCANA ==========
+        $totalDonasiValue = DonasiBencana::sum('nilai') ?? 0;
         $totalDonasiCount = DonasiBencana::count();
+        
+        // Donasi Terbesar (untuk tabel)
+        $donasiTerbesar = DonasiBencana::with('kejadian')  // ← UBAH: 'kejadianBencana' menjadi 'kejadian'
+            ->orderByDesc('nilai')
+            ->take(5)
+            ->get(['donasi_id', 'donatur_nama', 'jenis', 'nilai', 'kejadian_id']);
+        
+        // ========== LOGISTIK BENCANA ==========
         $totalLogistik = LogistikBencana::count();
-
-        // Kejadian Terbaru
-        $kejadianTerbaru = KejadianBencana::orderByDesc('created_at')
-                            ->take(5)
-                            ->get();
-
-        // Statistik Donasi
-        $donasiStats = [
-            'pending' => DonasiBencana::count(),
-            'diterima' => DonasiBencana::count(),
-            'ditolak' => DonasiBencana::count(),
-        ];
-
-        // Statistik Logistik
-        $logistikStats = [
-            'tersedia' => LogistikBencana::count(),
-            'dipinjam' => LogistikBencana::count(),
-            'habis' => LogistikBencana::count(),
-            'kadaluarsa' => LogistikBencana::count(),
-        ];
-
-        // Aktivitas Terbaru - tampilkan untuk semua
-        $recentActivities = $this->getRecentActivities();
+        $logistikStokTotal = LogistikBencana::sum('stok') ?? 0;
+        $logistikStokKosong = LogistikBencana::where('stok', 0)->count();
+        $logistikStokAda = LogistikBencana::where('stok', '>', 0)->count();
+        $logistikStokKritis = LogistikBencana::where('stok', '<', 10)
+            ->where('stok', '>', 0)
+            ->count();
+        
+        // Logistik Penting (untuk tabel)
+        $logistikPenting = LogistikBencana::orderByDesc('stok')
+            ->take(10)
+            ->get(['logistik_id', 'nama_barang', 'satuan', 'stok', 'sumber']);
+        
+        // ========== DISTRIBUSI LOGISTIK ==========
+        $totalDistribusi = DistribusiLogistik::sum('jumlah') ?? 0;
+        $distribusiHariIni = DistribusiLogistik::whereDate('tanggal', Carbon::today())
+            ->sum('jumlah') ?? 0;
+        
+        // ========== WARGA ==========
+        $totalWarga = Warga::count();
+        
+        // Warga Terbaru (untuk tabel)
+        $wargaTerbaru = Warga::orderByDesc('created_at')
+            ->take(5)
+            ->get(['warga_id', 'nama', 'jenis_kelamin', 'pekerjaan', 'telp']);
 
         return view('dashboard', compact(
-            'user',
-            'isAdmin',
-            'isWarga',
+            // Kejadian Bencana
             'totalKejadian',
+            'kejadianAktif',
+            'kejadianVerifikasi',
+            'kejadianSelesai',
+            'kejadianTerbaru',
+            'jenisBencanaStats',
+            
+            // Posko Bencana
             'totalPosko',
+            'poskoList',
+            
+            // Donasi Bencana
             'totalDonasiValue',
             'totalDonasiCount',
+            'donasiTerbesar',
+            
+            // Logistik Bencana
             'totalLogistik',
-            'kejadianTerbaru',
-            'donasiStats',
-            'logistikStats',
-            'recentActivities'
+            'logistikStokTotal',
+            'logistikStokKosong',
+            'logistikStokAda',
+            'logistikStokKritis',
+            'logistikPenting',
+            
+            // Distribusi Logistik
+            'totalDistribusi',
+            'distribusiHariIni',
+            
+            // Warga
+            'totalWarga',
+            'wargaTerbaru'
         ));
     }
-
-    /**
-     * Get recent activities for today
-     */
-    private function getRecentActivities()
-    {
-        $today = Carbon::today();
-        $activities = [];
-
-        // Kejadian hari ini
-        $todayKejadian = KejadianBencana::whereDate('created_at', $today)->count();
-        if ($todayKejadian > 0) {
-            $activities[] = [
-                'title' => 'Kejadian Baru',
-                'description' => $todayKejadian . ' kejadian bencana ditambahkan hari ini',
-                'icon' => 'exclamation-triangle',
-                'color' => 'warning',
-                'time' => 'Hari ini',
-                'link' => route('kejadian.index')
-            ];
-        }
-
-        // Donasi hari ini
-        $todayDonasi = DonasiBencana::whereDate('created_at', $today)->count();
-        if ($todayDonasi > 0) {
-            $activities[] = [
-                'title' => 'Donasi Masuk',
-                'description' => $todayDonasi . ' donasi baru diterima hari ini',
-                'icon' => 'cash-coin',
-                'color' => 'info',
-                'time' => 'Hari ini',
-                'link' => route('donasi.index')
-            ];
-        }
-
-        // Logistik hari ini
-        $todayLogistik = LogistikBencana::whereDate('created_at', $today)->count();
-        if ($todayLogistik > 0) {
-            $activities[] = [
-                'title' => 'Logistik Baru',
-                'description' => $todayLogistik . ' item logistik ditambahkan hari ini',
-                'icon' => 'box-seam',
-                'color' => 'purple',
-                'time' => 'Hari ini',
-                'link' => route('logistik.index')
-            ];
-        }
-
-        // Posko hari ini
-        $todayPosko = PoskoBencana::whereDate('created_at', $today)->count();
-        if ($todayPosko > 0) {
-            $activities[] = [
-                'title' => 'Posko Baru',
-                'description' => $todayPosko . ' posko darurat ditambahkan hari ini',
-                'icon' => 'house',
-                'color' => 'success',
-                'time' => 'Hari ini',
-                'link' => route('posko.index')
-            ];
-        }
-
-        // Jika tidak ada aktivitas hari ini, tampilkan aktivitas terbaru
-        if (empty($activities)) {
-            $latestKejadian = KejadianBencana::latest()->first();
-            if ($latestKejadian) {
-                $kejadianId = $latestKejadian->id ?? $latestKejadian->kejadian_id ?? null;
-                
-                $activities[] = [
-                    'title' => 'Kejadian Terakhir',
-                    'description' => $latestKejadian->nama_bencana . ' di ' . $latestKejadian->lokasi,
-                    'icon' => 'exclamation-triangle',
-                    'color' => 'warning',
-                    'time' => $latestKejadian->created_at->diffForHumans(),
-                    'link' => $kejadianId ? route('kejadian.show', $kejadianId) : null
-                ];
-            }
-
-            $latestDonasi = DonasiBencana::latest()->first();
-            if ($latestDonasi) {
-                $donasiId = $latestDonasi->id ?? $latestDonasi->donasi_id ?? null;
-                
-                $activities[] = [
-                    'title' => 'Donasi Terakhir',
-                    'description' => 'Rp ' . number_format($latestDonasi->nilai ?? 0, 0, ',', '.') . ' dari ' . ($latestDonasi->nama_donatur ?? 'Anonim'),
-                    'icon' => 'cash-coin',
-                    'color' => 'info',
-                    'time' => $latestDonasi->created_at->diffForHumans(),
-                    'link' => $donasiId ? route('donasi.show', $donasiId) : null
-                ];
-            }
-        }
-
-        // Limit to 4 activities
-        return array_slice($activities, 0, 4);
-    }
-
-    // Method lain tetap sama
-    public function create() {}
-    public function store(Request $request) {}
-    public function show(string $id) {}
-    public function edit(string $id) {}
-    public function update(Request $request, string $id) {}
-    public function destroy(string $id) {}
 }

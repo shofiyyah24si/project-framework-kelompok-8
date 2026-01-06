@@ -42,40 +42,13 @@
                         @endif
 
                         <div class="card-body">
-                            {{-- HEADER DENGAN STATUS --}}
-                            <div class="d-flex justify-content-between align-items-start mb-4">
-                                <div>
-                                    @php
-                                        $status = 'Aktif';
-                                        if($data->kejadian && isset($data->kejadian->status_kejadian)) {
-                                            $kejadianStatus = $data->kejadian->status_kejadian;
-                                            $status = match($kejadianStatus) {
-                                                'Baru' => 'Baru',
-                                                'Proses' => 'Aktif',
-                                                'Selesai' => 'Selesai',
-                                                default => 'Aktif'
-                                            };
-                                        }
-                                        
-                                        $badgeClass = match($status) {
-                                            'Baru'    => 'bg-danger',
-                                            'Aktif'   => 'bg-primary',
-                                            'Proses'  => 'bg-warning text-dark',
-                                            'Selesai' => 'bg-success',
-                                            default   => 'bg-secondary',
-                                        };
-                                    @endphp
-                                    
-                                    <span class="badge {{ $badgeClass }} px-3 py-2 mb-2">
-                                        <i class="bi bi-circle-fill me-1" style="font-size: 0.6rem;"></i>
-                                        {{ $status }}
-                                    </span>
-                                    <h2 class="h4 mb-2 fw-bold text-dark">{{ $data->nama }}</h2>
-                                    <p class="text-muted mb-0">
-                                        <i class="bi bi-calendar3 me-1"></i>
-                                        Dibuat: {{ \Carbon\Carbon::parse($data->created_at)->format('d F Y H:i') }}
-                                    </p>
-                                </div>
+                            {{-- HEADER TANPA STATUS --}}
+                            <div class="mb-4">
+                                <h2 class="h4 mb-2 fw-bold text-dark">{{ $data->nama }}</h2>
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    Dibuat: {{ \Carbon\Carbon::parse($data->created_at)->format('d F Y H:i') }}
+                                </p>
                             </div>
 
                             <div class="row">
@@ -176,21 +149,12 @@
                             
                             <hr class="my-3">
                             
-                            {{-- STATUS SISTEM --}}
+                            {{-- INFO DOKUMENTASI --}}
                             <div class="mb-3">
                                 <h6 class="fw-bold mb-3 text-dark">
                                     <i class="bi bi-graph-up me-2 text-success"></i>
-                                    Status Sistem
+                                    Informasi
                                 </h6>
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded me-2">
-                                        <i class="bi bi-check-circle text-success"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <small class="text-muted d-block">Status Posko</small>
-                                        <span class="badge {{ $badgeClass }}">{{ $status }}</span>
-                                    </div>
-                                </div>
                                 
                                 <div class="d-flex align-items-center">
                                     <div class="bg-primary bg-opacity-10 p-2 rounded me-2">

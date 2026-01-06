@@ -59,7 +59,7 @@ class DistribusiLogistikController extends Controller
                 $query->orderBy('tanggal', 'desc')->orderBy('created_at', 'desc');
         }
 
-        $data = $query->paginate(5);
+        $data = $query->paginate(3);
         
         $listLogistik = LogistikBencana::where('stok', '>', 0)
                          ->orderBy('nama_barang')

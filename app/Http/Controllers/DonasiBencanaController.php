@@ -41,7 +41,7 @@ class DonasiBencanaController extends Controller
             $query->where('jenis', $request->jenis);
         }
 
-        $data = $query->latest()->paginate(10)->withQueryString();
+        $data = $query->latest()->paginate(5)->withQueryString();
         $totalDonasi = DonasiBencana::sum('nilai');
         $listKejadian = KejadianBencana::select('kejadian_id', 'jenis_bencana')->get();
         

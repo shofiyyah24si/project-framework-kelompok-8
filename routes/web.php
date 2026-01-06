@@ -9,88 +9,41 @@ use App\Http\Controllers\LogistikBencanaController;
 use App\Http\Controllers\DistribusiLogistikController;
 use App\Http\Controllers\WargaController;
 
-/*
-|--------------------------------------------------------------------------
-| PUBLIC ROUTES
-|--------------------------------------------------------------------------
-*/
+// LANDING PAGE
 Route::view('/', 'landing')->name('landing');
 
-// ============================================================
-// ROUTE LOGIN - LANGSUNG MASUK KE DASHBOARD (BYPASS LOGIN)
-// ============================================================
-Route::get('/login', function () {
-    if (!auth()->check()) {
-        $user = App\Models\User::first();
-        if ($user) {
-            auth()->login($user);
-        }
-    }
-    return redirect()->route('dashboard');
-})->name('login');
-
-Route::post('/login', function () {
-    return redirect()->route('dashboard');
-})->name('login.submit');
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// ============================================================
-// DASHBOARD & PROFILE - BISA DIAKSES TANPA LOGIN
-// ============================================================
+// DASHBOARD
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
 
-Route::prefix('profile')->group(function () {
-    Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
-    Route::post('/avatar/update', [ProfileController::class, 'updateAvatar'])
-        ->name('profile.avatar.update');
-    Route::delete('/avatar/delete', [ProfileController::class, 'deleteAvatar'])
-        ->name('profile.avatar.delete');
-    Route::post('/update', [ProfileController::class, 'updateProfile'])
-        ->name('profile.update');
+// SEMUA DATA READ-ONLY DALAM GROUP
+Route::prefix('data')->group(function () {
+    // Kejadian Bencana
+    Route::get('/kejadian', [KejadianController::class, 'index'])->name('kejadian.index');
+    Route::get('/kejadian/{id}', [KejadianController::class, 'show'])->name('kejadian.show');
+    
+    // Posko Darurat
+    Route::get('/posko', [PoskoController::class, 'index'])->name('posko.index');
+    Route::get('/posko/{id}', [PoskoController::class, 'show'])->name('posko.show');
+    
+    // Donasi
+    Route::get('/donasi', [DonasiBencanaController::class, 'index'])->name('donasi.index');
+    Route::get('/donasi/{id}', [DonasiBencanaController::class, 'show'])->name('donasi.show');
+    
+    // Logistik
+    Route::get('/logistik', [LogistikBencanaController::class, 'index'])->name('logistik.index');
+    Route::get('/logistik/{id}', [LogistikBencanaController::class, 'show'])->name('logistik.show');
+    
+    // Distribusi Logistik
+    Route::get('/distribusi', [DistribusiLogistikController::class, 'index'])->name('distribusi.index');
+    Route::get('/distribusi/{id}', [DistribusiLogistikController::class, 'show'])->name('distribusi.show');
+    
+    // Warga
+    Route::get('/warga', [WargaController::class, 'index'])->name('warga.index');
+    Route::get('/warga/{id}', [WargaController::class, 'show'])->name('warga.show');
 });
 
-// =============================================
-// ROUTE UNTUK MELIHAT DATA SAJA (TANPA CRUD)
-// =============================================
-
-// KEJADIAN - HANYA BISA LIHAT, TIDAK BISA TAMBAH/EDIT/HAPUS
-Route::get('/kejadian', [KejadianController::class, 'index'])->name('kejadian.index');
-Route::get('/kejadian/{id}', [KejadianController::class, 'show'])->name('kejadian.show');
-
-// POSKO - HANYA BISA LIHAT, TIDAK BISA TAMBAH/EDIT/HAPUS
-Route::get('/posko', [PoskoController::class, 'index'])->name('posko.index');
-Route::get('/posko/{id}', [PoskoController::class, 'show'])->name('posko.show');
-
-// DONASI - HANYA BISA LIHAT, TIDAK BISA TAMBAH/EDIT/HAPUS
-Route::get('/donasi', [DonasiBencanaController::class, 'index'])->name('donasi.index');
-Route::get('/donasi/{id}', [DonasiBencanaController::class, 'show'])->name('donasi.show');
-
-// LOGISTIK - HANYA BISA LIHAT, TIDAK BISA TAMBAH/EDIT/HAPUS
-Route::get('/logistik', [LogistikBencanaController::class, 'index'])->name('logistik.index');
-Route::get('/logistik/{id}', [LogistikBencanaController::class, 'show'])->name('logistik.show');
-
-// TAMBAHKAN INI: DISTRIBUSI LOGISTIK - HANYA BISA LIHAT
-Route::get('/distribusi', [DistribusiLogistikController::class, 'index'])->name('distribusi.index'); // PERBAIKAN
-Route::get('/distribusi/{id}', [DistribusiLogistikController::class, 'show'])->name('distribusi.show');
-
-// TAMBAHAN: WARGA - HANYA BISA LIHAT
-Route::get('/warga', [WargaController::class, 'index'])->name('warga.index');
-Route::get('/warga/{id}', [WargaController::class, 'show'])->name('warga.show');
-
-// =============================================
-// ROUTE KHUSUS ADMIN SAJA (CRUD) - DIHAPUS
-// =============================================
-// Route::middleware([AdminMiddleware::class])->group(function () {
-//     SEMUA ROUTE CRUD SUDAH DIHAPUS
-//     TIDAK ADA LAGI ROUTE CREATE, STORE, EDIT, UPDATE, DESTROY
-// });
-
-/*
-|--------------------------------------------------------------------------
-| FALLBACK ROUTE (404)
-|--------------------------------------------------------------------------
-*/
+// FALLBACK
 Route::fallback(function () {
     return redirect()->route('dashboard');
 });

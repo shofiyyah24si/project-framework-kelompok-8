@@ -30,6 +30,31 @@ class KejadianBencana extends Model
 
     protected $appends = ['foto_url'];
 
+    // ========== RELASI SESUAI STRUKTUR TABEL ==========
+    
+    // 1. Relasi ke PoskoBencana (Satu kejadian bisa punya banyak posko)
+    public function posko()
+    {
+        return $this->hasMany(PoskoBencana::class, 'kejadian_id', 'kejadian_id');
+    }
+    
+    // 2. Relasi ke DonasiBencana (Satu kejadian bisa punya banyak donasi)
+    public function donasi()
+    {
+        return $this->hasMany(DonasiBencana::class, 'kejadian_id', 'kejadian_id');
+    }
+    
+    // 3. Relasi ke LogistikBencana (Satu kejadian bisa punya banyak logistik)
+    public function logistik()
+    {
+        return $this->hasMany(LogistikBencana::class, 'kejadian_id', 'kejadian_id');
+    }
+    
+    // 4. Relasi ke DistribusiLogistik (melalui posko)
+    // Tidak ada relasi langsung, tapi bisa diakses melalui posko()
+    
+    // =================================================
+
     public function getFotoUrlAttribute()
     {
         if (!$this->foto) {
@@ -38,15 +63,28 @@ class KejadianBencana extends Model
         return asset('storage/' . $this->foto);
     }
 
-    // HAPUS RELASI files() SELURUHNYA
-    // public function files()
-    // {
-    //     return $this->hasMany(KejadianFile::class, 'kejadian_id');
-    // }
-    
-    // HAPUS relasi posko() jika tidak dibutuhkan
-    // public function posko()
-    // {
-    //     return $this->hasMany(PoskoBencana::class, 'kejadian_id');
-    // }
+    // Helper untuk status
+    public function getStatusBadgeAttribute()
+    {
+        $badges = [
+            'Dilaporkan' => 'danger',
+            'Verifikasi' => 'warning',
+            'Selesai' => 'success',
+        ];
+        
+        return '<span class="badge bg-' . ($badges[$this->status_kejadian] ?? 'secondary') . '">' . $this->status_kejadian . '</span>';
+    }
+
+    // Helper untuk lokasi lengkap
+    public function getLokasiLengkapAttribute()
+    {
+        $lokasi = $this->lokasi_text;
+        if ($this->rt) {
+            $lokasi .= ' | RT ' . $this->rt;
+        }
+        if ($this->rw) {
+            $lokasi .= ' / RW ' . $this->rw;
+        }
+        return $lokasi;
+    }
 }

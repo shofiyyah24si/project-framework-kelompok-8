@@ -104,24 +104,11 @@
                 {{-- GRID CARD DATA --}}
                 <div class="row g-4">
                     @foreach($data as $item)
-                        @php
-                            // Anda bisa menambahkan status posko jika ada di model
-                            // $status = $item->status_posko ?? 'Aktif';
-                            // $badgeClass = match($status) {
-                            //     'Aktif'    => 'bg-success',
-                            //     'Nonaktif' => 'bg-secondary',
-                            //     default    => 'bg-success',
-                            // };
-                        @endphp
-
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 border-0 shadow-sm">
                                 {{-- CARD HEADER --}}
                                 <div class="card-header bg-white border-0 pb-0 pt-3 px-3">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge bg-success px-3 py-2 fw-medium">
-                                            Aktif
-                                        </span>
                                         <small class="text-muted">
                                             <i class="bi bi-calendar3 me-1"></i>
                                             @if($item->created_at)
