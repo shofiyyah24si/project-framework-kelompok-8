@@ -34,7 +34,17 @@ class WargaController extends Controller
         
         $wargas = $query->orderBy('created_at', 'desc')->paginate(12);
         
-        return view('warga.index', compact('wargas'));
+        // ========== STATISTIK GLOBAL (SINKRON DASHBOARD) ==========
+        $totalWarga       = Warga::count();
+        $totalLakiLaki    = Warga::where('jenis_kelamin', 'Laki-laki')->count();
+        $totalPerempuan   = Warga::where('jenis_kelamin', 'Perempuan')->count();
+
+        return view('warga.index', compact(
+            'wargas',
+            'totalWarga',
+            'totalLakiLaki',
+            'totalPerempuan'
+        ));
     }
 
     public function create()

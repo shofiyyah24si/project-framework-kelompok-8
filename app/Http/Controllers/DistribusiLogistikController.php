@@ -67,7 +67,19 @@ class DistribusiLogistikController extends Controller
         
         $listPosko = PoskoBencana::orderBy('nama')->get();
 
-        return view('distribusi.index', compact('data', 'listLogistik', 'listPosko'));
+        // ========== STATISTIK GLOBAL (SINKRON DASHBOARD) ==========
+        $totalDistribusi    = DistribusiLogistik::sum('jumlah') ?? 0;
+        $distribusiHariIni  = DistribusiLogistik::whereDate('tanggal', \Carbon\Carbon::today())->sum('jumlah') ?? 0;
+        $totalDistribusiCount = DistribusiLogistik::count();
+
+        return view('distribusi.index', compact(
+            'data',
+            'listLogistik',
+            'listPosko',
+            'totalDistribusi',
+            'distribusiHariIni',
+            'totalDistribusiCount'
+        ));
     }
 
     // Create - Form tambah distribusi

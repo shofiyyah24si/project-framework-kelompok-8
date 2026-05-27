@@ -291,67 +291,65 @@
                 </div>
             @endif
 
-            {{-- STATISTIK CEPAT --}}
-            @if($data->count())
-                <div class="row mt-4 g-3">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-building text-primary fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Total Posko</h6>
-                                        <p class="text-muted small mb-0">Semua data posko</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-primary">
-                                        {{ $data->total() }}
-                                    </div>
+            {{-- STATISTIK CEPAT (SINKRON DASHBOARD) --}}
+            <div class="row mt-4 g-3">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-building text-primary fs-4"></i>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-hospital text-success fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Dengan Kejadian</h6>
-                                        <p class="text-muted small mb-0">Terkait bencana</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-success">
-                                        {{ $data->where('kejadian_id', '!=', null)->count() }}
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Total Posko</h6>
+                                    <p class="text-muted small mb-0">Seluruh data posko</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-camera text-info fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Dengan Foto</h6>
-                                        <p class="text-muted small mb-0">Memiliki dokumentasi</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-info">
-                                        {{ $data->where('foto', '!=', null)->count() }}
-                                    </div>
+                                <div class="fs-4 fw-bold text-primary">
+                                    {{ $totalPosko }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-hospital text-success fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Dengan Kejadian</h6>
+                                    <p class="text-muted small mb-0">Terkait bencana</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-success">
+                                    {{ $poskoTerkait }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-camera text-info fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Dengan Foto</h6>
+                                    <p class="text-muted small mb-0">Memiliki dokumentasi</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-info">
+                                    {{ $poskoDenganFoto }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>

@@ -300,6 +300,66 @@
                 </div>
             @endif
 
+            {{-- STATISTIK CEPAT (SINKRON DASHBOARD) --}}
+            <div class="row mt-4 g-3">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-truck text-primary fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Total Distribusi</h6>
+                                    <p class="text-muted small mb-0">Item terdistribusi</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-primary">
+                                    {{ $totalDistribusi }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-calendar-check text-success fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Distribusi Hari Ini</h6>
+                                    <p class="text-muted small mb-0">{{ now()->format('d/m/Y') }}</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-success">
+                                    {{ $distribusiHariIni }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-list-check text-info fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Total Transaksi</h6>
+                                    <p class="text-muted small mb-0">Jumlah pengeluaran</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-info">
+                                    {{ $totalDistribusiCount }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 @endsection

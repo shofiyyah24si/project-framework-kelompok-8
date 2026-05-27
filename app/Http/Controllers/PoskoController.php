@@ -52,7 +52,18 @@ class PoskoController extends Controller
         // DROPDOWN
         $listKejadian = KejadianBencana::select('kejadian_id', 'jenis_bencana')->get();
 
-        return view('posko.index', compact('data', 'listKejadian'));
+        // ========== STATISTIK GLOBAL (SINKRON DASHBOARD) ==========
+        $totalPosko       = PoskoBencana::count();
+        $poskoTerkait     = PoskoBencana::whereNotNull('kejadian_id')->count();
+        $poskoDenganFoto  = PoskoBencana::whereNotNull('foto')->count();
+
+        return view('posko.index', compact(
+            'data',
+            'listKejadian',
+            'totalPosko',
+            'poskoTerkait',
+            'poskoDenganFoto'
+        ));
     }
 
     /*

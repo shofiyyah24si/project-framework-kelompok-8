@@ -44,13 +44,23 @@ class LogistikBencanaController extends Controller
         }
 
         $data = $query->paginate(3)->withQueryString();
-        $totalStok = LogistikBencana::sum('stok');
+
+        // ========== STATISTIK GLOBAL (SINKRON DASHBOARD) ==========
+        $totalLogistik     = LogistikBencana::count();
+        $totalStok         = LogistikBencana::sum('stok') ?? 0;
+        $logistikStokAda   = LogistikBencana::where('stok', '>', 0)->count();
+        $logistikStokKosong = LogistikBencana::where('stok', 0)->count();
+        $logistikStokKritis = LogistikBencana::where('stok', '<', 10)->where('stok', '>', 0)->count();
+
         $listKejadian = KejadianBencana::select('kejadian_id', 'jenis_bencana')->get();
         
-        // ✅ HAPUS STATUS LIST DAN STATS
         return view('logistik.index', compact(
             'data', 
             'totalStok', 
+            'totalLogistik',
+            'logistikStokAda',
+            'logistikStokKosong',
+            'logistikStokKritis',
             'listKejadian'
         ));
     }

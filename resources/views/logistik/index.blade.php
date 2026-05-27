@@ -300,7 +300,86 @@
                 </div>
             @endif
 
-            {{-- HAPUS STATISTIK CEPAT --}}
+            {{-- STATISTIK CEPAT (SINKRON DASHBOARD) --}}
+            <div class="row mt-4 g-3">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-boxes text-warning fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Total Stok</h6>
+                                    <p class="text-muted small mb-0">{{ $totalLogistik }} jenis barang</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-warning">
+                                    {{ $totalStok }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Stok Tersedia</h6>
+                                    <p class="text-muted small mb-0">Jumlah > 0</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-success">
+                                    {{ $logistikStokAda }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-exclamation-circle-fill text-warning fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Stok Kritis</h6>
+                                    <p class="text-muted small mb-0">Stok 1-9</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-warning">
+                                    {{ $logistikStokKritis }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-x-circle-fill text-danger fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Stok Habis</h6>
+                                    <p class="text-muted small mb-0">Stok = 0</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-danger">
+                                    {{ $logistikStokKosong }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- HAPUS STATISTIK CEPAT LAMA --}}
             {{-- @if($data->count())
                 <div class="row mt-4 g-3">
                     <div class="col-md-3">

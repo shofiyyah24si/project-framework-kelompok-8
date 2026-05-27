@@ -37,14 +37,17 @@ class KejadianController extends Controller
     $listRT = KejadianBencana::select('rt')->distinct()->orderBy('rt')->pluck('rt');
     $listRW = KejadianBencana::select('rw')->distinct()->orderBy('rw')->pluck('rw');
     
-    // ⬇️⬇️⬇️ INI YANG DIUBAH ⬇️⬇️⬇️
+    // Status sinkron dengan Dashboard
     $listStatus = ['Dilaporkan', 'Verifikasi', 'Selesai'];
-    // ⬆️⬆️⬆️ GANTI SAJA INI ⬆️⬆️⬆️
-    
-    // ========== TAMBAHKAN KEDUA VARIABLE INI ==========
+
     $listLogistik = \App\Models\LogistikBencana::all();
     $listPosko = \App\Models\PoskoBencana::all();
-    // ========== PERBAIKAN SELESAI ==========
+
+    // ========== STATISTIK GLOBAL (SINKRON DENGAN DASHBOARD) ==========
+    $totalKejadian       = KejadianBencana::count();
+    $kejadianAktif       = KejadianBencana::where('status_kejadian', 'Dilaporkan')->count();
+    $kejadianVerifikasi  = KejadianBencana::where('status_kejadian', 'Verifikasi')->count();
+    $kejadianSelesai     = KejadianBencana::where('status_kejadian', 'Selesai')->count();
 
     return view('kejadian.index', compact(
         'data', 
@@ -52,7 +55,11 @@ class KejadianController extends Controller
         'listRW', 
         'listStatus',
         'listLogistik',
-        'listPosko'
+        'listPosko',
+        'totalKejadian',
+        'kejadianAktif',
+        'kejadianVerifikasi',
+        'kejadianSelesai'
     ));
 }
 

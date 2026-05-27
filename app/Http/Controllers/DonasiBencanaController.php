@@ -42,17 +42,23 @@ class DonasiBencanaController extends Controller
         }
 
         $data = $query->latest()->paginate(5)->withQueryString();
-        $totalDonasi = DonasiBencana::sum('nilai');
+
+        // ========== STATISTIK GLOBAL (SINKRON DASHBOARD) ==========
+        $totalDonasi      = DonasiBencana::sum('nilai') ?? 0;
+        $totalDonasiCount = DonasiBencana::count();
+
         $listKejadian = KejadianBencana::select('kejadian_id', 'jenis_bencana')->get();
-        
-        // HAPUS $statusList
-        // $statusList = ['pending', 'diterima', 'ditolak'];
         
         // List untuk dropdown jenis
         $jenisList = ['Uang Tunai', 'Transfer Bank', 'E-Wallet', 'Barang', 'Makanan', 'Obat-obatan', 'Pakaian', 'Lainnya'];
 
-        // HAPUS $statusList dari compact()
-        return view('donasi.index', compact('data', 'totalDonasi', 'listKejadian', 'jenisList'));
+        return view('donasi.index', compact(
+            'data',
+            'totalDonasi',
+            'totalDonasiCount',
+            'listKejadian',
+            'jenisList'
+        ));
     }
     
     public function create()

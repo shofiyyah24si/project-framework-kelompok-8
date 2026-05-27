@@ -125,10 +125,10 @@
                         @php
                             $status = $item->status_kejadian ?? '-';
                             $badgeClass = match($status) {
-                                'Baru'    => 'bg-danger',
-                                'Proses'  => 'bg-warning text-dark',
-                                'Selesai' => 'bg-success',
-                                default   => 'bg-secondary',
+                                'Dilaporkan' => 'bg-danger',
+                                'Verifikasi' => 'bg-warning text-dark',
+                                'Selesai'    => 'bg-success',
+                                default      => 'bg-secondary',
                             };
                         @endphp
 
@@ -305,67 +305,84 @@
                 </div>
             @endif
 
-            {{-- STATISTIK CEPAT --}}
-            @if($data->count())
-                <div class="row mt-4 g-3">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Kejadian Baru</h6>
-                                        <p class="text-muted small mb-0">Memerlukan penanganan</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-danger">
-                                        {{ $data->where('status_kejadian', 'Baru')->count() }}
-                                    </div>
+            {{-- STATISTIK CEPAT (SINKRON DASHBOARD) --}}
+            <div class="row mt-4 g-3">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-clipboard-data text-primary fs-4"></i>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-arrow-repeat text-warning fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Dalam Proses</h6>
-                                        <p class="text-muted small mb-0">Sedang ditangani</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-warning">
-                                        {{ $data->where('status_kejadian', 'Proses')->count() }}
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Total Kejadian</h6>
+                                    <p class="text-muted small mb-0">Seluruh data</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Selesai</h6>
-                                        <p class="text-muted small mb-0">Telah ditangani</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-success">
-                                        {{ $data->where('status_kejadian', 'Selesai')->count() }}
-                                    </div>
+                                <div class="fs-4 fw-bold text-primary">
+                                    {{ $totalKejadian }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-danger bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Dilaporkan</h6>
+                                    <p class="text-muted small mb-0">Belum diverifikasi</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-danger">
+                                    {{ $kejadianAktif }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-arrow-repeat text-warning fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Verifikasi</h6>
+                                    <p class="text-muted small mb-0">Sedang diproses</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-warning">
+                                    {{ $kejadianVerifikasi }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Selesai</h6>
+                                    <p class="text-muted small mb-0">Telah ditangani</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-success">
+                                    {{ $kejadianSelesai }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>

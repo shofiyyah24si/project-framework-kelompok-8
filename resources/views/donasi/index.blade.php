@@ -300,25 +300,45 @@
                 </div>
             @endif
 
-            {{-- TOTAL DONASI SAJA --}}
-            @if($data->count())
-                <div class="card border-0 shadow-sm mt-4">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
-                                <i class="bi bi-cash-stack text-primary fs-4"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0 fw-bold">Total Nilai Donasi</h6>
-                                <p class="text-muted small mb-0">Keseluruhan donasi</p>
-                            </div>
-                            <div class="fs-4 fw-bold text-primary">
-                                Rp {{ number_format($totalDonasi, 0, ',', '.') }}
+            {{-- TOTAL DONASI (SINKRON DASHBOARD) --}}
+            <div class="row mt-4 g-3">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-cash-stack text-primary fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Total Nilai Donasi</h6>
+                                    <p class="text-muted small mb-0">Keseluruhan donasi</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-primary">
+                                    Rp {{ number_format($totalDonasi, 0, ',', '.') }}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-receipt text-success fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Jumlah Transaksi</h6>
+                                    <p class="text-muted small mb-0">Total semua donasi</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-success">
+                                    {{ $totalDonasiCount }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>

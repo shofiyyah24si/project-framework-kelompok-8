@@ -272,69 +272,65 @@
                 </div>
             @endif
 
-            {{-- STATISTIK CEPAT --}}
-            @if($wargas->count())
-                <div class="row mt-4 g-3">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-person-fill text-primary fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Laki-laki</h6>
-                                        <p class="text-muted small mb-0">Jumlah warga laki-laki</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-primary">
-                                        {{-- 🔧 PERBAIKAN: Bandingkan dengan "Laki-laki" bukan "L" --}}
-                                        {{ $wargas->where('jenis_kelamin', 'Laki-laki')->count() }}
-                                    </div>
+            {{-- STATISTIK CEPAT (SINKRON DASHBOARD) --}}
+            <div class="row mt-4 g-3">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-person-fill text-primary fs-4"></i>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-pink bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-person-hearts text-pink fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Perempuan</h6>
-                                        <p class="text-muted small mb-0">Jumlah warga perempuan</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-pink">
-                                        {{-- 🔧 PERBAIKAN: Bandingkan dengan "Perempuan" bukan "P" --}}
-                                        {{ $wargas->where('jenis_kelamin', 'Perempuan')->count() }}
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Laki-laki</h6>
+                                    <p class="text-muted small mb-0">Jumlah warga laki-laki</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                        <i class="bi bi-people-fill text-success fs-4"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold">Total Warga</h6>
-                                        <p class="text-muted small mb-0">Semua data warga</p>
-                                    </div>
-                                    <div class="fs-4 fw-bold text-success">
-                                        {{ $wargas->total() }}
-                                    </div>
+                                <div class="fs-4 fw-bold text-primary">
+                                    {{ $totalLakiLaki }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+                
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-pink bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-person-hearts text-pink fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Perempuan</h6>
+                                    <p class="text-muted small mb-0">Jumlah warga perempuan</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-pink">
+                                    {{ $totalPerempuan }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-2 rounded me-3">
+                                    <i class="bi bi-people-fill text-success fs-4"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">Total Warga</h6>
+                                    <p class="text-muted small mb-0">Semua data warga</p>
+                                </div>
+                                <div class="fs-4 fw-bold text-success">
+                                    {{ $totalWarga }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>
